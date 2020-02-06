@@ -1,0 +1,13 @@
+theme: jekyll-theme-minimal
+title: 'UC Davis Bioinformatics Workshop Base Template'
+show_downloads: True
+google_analytics: True
+navigation:
+  - title: Home
+    url: /
+
+  - heading: Introduction
+  - title: Intro to the Workshop and Core
+    url: welcome
+  - title: Examples of Markdown Formatting
+    url: examples
