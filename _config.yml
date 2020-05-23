@@ -6,8 +6,56 @@ navigation:
   - title: Home
     url: /
 
-  - heading: Introduction
+  - heading: Introduction and Lectures
   - title: Intro to the Workshop and Core
-    url: welcome
-  - title: Examples of Markdown Formatting
-    url: examples
+    url: base/welcome
+  - title: Schedule
+    url: base/schedule
+  - title: What is Bioinformatics/Genomics?
+    url: https://raw.githubusercontent.com/ucdavis-bioinformatics-training/ucdavis-bioinformatics-training.presentations/master/genomics/Genomics_a_perspective_May_2020.pdf
+  - title: Experimental Design and Cost Estimation
+    url: https://raw.githubusercontent.com/ucdavis-bioinformatics-training/ucdavis-bioinformatics-training.presentations/master/singlecell/scRNAseq-expDesign_May_2020.pdf
+  # - title: Single Cell Sample Preparation - Dr. Diana Burkart-Waco
+  #   url: https://raw.githubusercontent.com/ucdavis-bioinformatics-training/ucdavis-bioinformatics-training.presentations/master/singlecell/2020_SingleCell_SampleTalk_DBurkart.pdf
+
+  - heading: Support
+  - title: Cheat Sheets
+    url: base/cheatSheetIndex
+  - title: Software and Links
+    url: software_scripts/software
+  - title: Scripts
+    url: software_scripts/scripts_links
+
+  - heading: Prerequisites
+  - title: CLI - Logging in and Transferring Files
+    url: prerequisites/cli/logging-in
+  - title: CLI - Intro to Command-Line
+    url: prerequisites/cli/command-line-intro
+  - title: CLI - Advanced Command-Line (extra)
+    url: prerequisites/cli/advanced-command-line
+  - title: CLI - Running jobs on the Cluster and using modules
+    url: prerequisites/cli/cluster
+  - title: R - Getting Started
+    url: prerequisites/intro2R/RStudio
+  - title: R - Intro to R
+    url: prerequisites/intro2R/Intro2R_fixed
+  - title: R - Prepare Data in R (extra)
+    url: prerequisites/intro2R/data_in_R_prepare_fixed
+  - title: R - Data in R (extra)
+    url: prerequisites/intro2R/data_in_R_fixed
+  - title: More Materials (extra)
+    url: https://ucdavis-bioinformatics-training.github.io/2019-Winter-Bioinformatics_Command_Line_and_R_Prerequisites_Workshop/
+
+  - heading: Data Reduction
+
+  - heading: Data analysis
+
+  - heading: ETC
+  - title: Closing thoughts
+    url: base/closing
+  - title: Workshop Photos
+    url: photos/photos
+  - title: Github page
+    url: https://github.com/ucdavis-bioinformatics-training/2020-Advanced_Single_Cell_RNA_Seq
+  - title: Biocore website
+    url: http://bioinformatics.ucdavis.edu
