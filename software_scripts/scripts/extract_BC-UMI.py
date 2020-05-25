@@ -19,16 +19,16 @@ from optparse import OptionParser  # http://docs.python.org/library/optparse.htm
 import gzip
 
 
-usage = "usage: %prog [options] -o output_base inputfile.SAM"
+usage = "usage: %prog [options]"
 parser = OptionParser(usage=usage)
+parser.add_option('--insert', help="insert extracted tags into library",
+                  action="store_true", dest="insert",default=False)
+parser.add_option('--extract', help="extract to tags",
+                  action="store_true", dest="extract", default=False)
 parser.add_option('--read', help="the read the barcode and umi can be found on",
                   action="store", type="int", dest="read")
-parser.add_option('--length', help="the total length of read and UMI",
+parser.add_option('--length', help="the total length of the BC and UMI",
                   action="store", type="int", dest="length")
-parser.add_option('--insert', help="insert extracted tags into library as read2",
-                  action="store_true", dest="insert",default=False)
-parser.add_option('--extract', help="extract to tags and generate a SE read",
-                  action="store_true", dest="extract", default=False)
 
 (options,  args) = parser.parse_args()  # uncomment this line for command line support
 
