@@ -19,8 +19,8 @@ where 'username' is replaced with your username. Press Enter.
 
 The main commands we will be using are srun, sbatch, squeue, scancel, and sacct. First, log into the head node (tadpole.genomecenter.ucdavis.edu) and make a directory for yourself where you will be doing all your work.
 
-    mkdir /share/workshop/$USER
-    cd /share/workshop/$USER
+    mkdir /share/workshop/adv_scrna/$USER
+    cd /share/workshop/adv_scrna/$USER
 
 **2a\.** ['srun'](https://slurm.schedmd.com/srun.html) is used to run a job interactively. We most often use it to start an interactive session on a compute node. Take a look at the options to srun:
 
@@ -85,7 +85,7 @@ echo Time taken: $elapsed
 The first line tells sbatch what scripting language (bash here) the rest of the file is in. Any line that begins with a "#" symbol is ignored by the bash interpreter, those lines that begin with "#SBATCH" are used by the slurm controller. Those lines are for specifying sbatch options without having to type them on the command-line every time. In this script, on the next set of lines, we've put some code for calculating the time elapsed for the job and then we simply wait for 5 minutes (300 seconds) and exit. Lets try running it
 
 
-    cd /share/workshop/$USER
+    cd /share/workshop/adv_scrna/$USER
     wget https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2020-Advanced_Single_Cell_RNA_Seq/master/software_scripts/scripts/template.slurm
     cat template.slurm
     sbatch template.slurm

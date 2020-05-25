@@ -20,3 +20,6 @@ Single cell Resources
 1. [Awesome Singlecell](https://github.com/seandavi/awesome-single-cell)
 1. [Satija Lab - how many cells](www.satijalab.org/howmanycells)
 1. [Satija Lab - cost per cell](https://satijalab.org/costpercell)
+
+Software
+1. [HTStream](https://github.com/ibest/HTStream)

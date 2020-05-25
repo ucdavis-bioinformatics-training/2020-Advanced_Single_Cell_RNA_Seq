@@ -6,7 +6,7 @@ The sed command
 
 Let's take a look at the 'sed' command. sed (short for stream editor) is a command that allows you to manipulate character data in various ways. One useful thing it can do is substitution. First, make a directory called "advanced" to work in, for this document. If you have access to /share/workshop, then make the "advanced" directory under your username there. If you don't, just put the "advanced" directory in your home. The "$USER" variable contains your username.
 
-    cd /share/workshop/$USER/  # or, if this fails, just 'cd ~' or 'cd'
+    cd /share/workshop/adv_scrna/$USER/  # or, if this fails, just 'cd ~' or 'cd'
     mkdir advanced
     cd advanced/
 
