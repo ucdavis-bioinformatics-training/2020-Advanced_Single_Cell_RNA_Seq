@@ -11,8 +11,17 @@
 **10:30 am**  [Running jobs on a cluster](../prerequisites/cli/cluster)      
 **11:00 pm**   _Hands on_  
 **11:15 am**  [Genomics/Bioinformatics Talk](https://raw.githubusercontent.com/ucdavis-bioinformatics-training/ucdavis-bioinformatics-training.presentations/master/genomics/Genomics_a_perspective_May_2020.pdf)  
-**12:00 pm** Lunch hour    
-**1:00 pm**   Resume  
+**12:00 pm** Lunch hour      
+**1:00 pm**   [Expression Matrices](../data_reduction/Expression_Matrix)  
+**1:15 pm**  [Expression Project Setup](../data_reduction/project_setup_counting)  
+**1:30 pm**  _Hangs_on_  
+**1:45 pm**  [HTStream Preprocessing](../data_reduction/scrna_htstream)  
+**2:00 pm**  _Hands_on_
+**2:30 pm**  15 minute break
+**2:45 pm**  Creating References  
+**3:00 pm**  _Hands_on_
+**3:15 pm** Read counting with Cellranger/Star solo/Salmon alevin  
+**3:45 pm** _Hands_on_
 **4:45 pm**  Recap and Homework   
 **5:00 pm**  Zoom session ends    
 

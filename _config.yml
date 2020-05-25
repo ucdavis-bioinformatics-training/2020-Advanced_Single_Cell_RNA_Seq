@@ -47,6 +47,8 @@ navigation:
     url: https://ucdavis-bioinformatics-training.github.io/2019-Winter-Bioinformatics_Command_Line_and_R_Prerequisites_Workshop/
 
   - heading: Data Reduction
+  - title: Generating Expression Matrices
+  - url: Expression_Matrix.md
   - title: Expression project setup
     url: data_reduction/project_setup_counting
   - title: Preprocessing reads with HTStream
