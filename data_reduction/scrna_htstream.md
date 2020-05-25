@@ -95,17 +95,17 @@ PCA/MDS plots of the preprocessing summary are a great way to look for technical
 
 HTStream includes the following applications:
 
-[hts_AdapterTrimmer](./hts_AdapterTrimmer): Identify and remove adapter sequences.  
-[hts_CutTrim](./hts_CutTrim): Discreet 5' and/or 3' basepair trimming.  
-[hts_LengthFilter](./hts_LengthFilter): Remove reads outside of min and/or max length.  
-[hts_NTrimmer](./hts_NTrimmer): Extract the longest subsequence with no Ns.    
-[hts_Overlapper](./hts_Overlapper): Overlap paired end reads, removing adapters when present.  
-[hts_PolyATTrim](./hts_PolyATTrim): Identify and remove polyA/T sequence.  
-[hts_Primers](./hts_Primers) - Identify and optionally remove 5' and/or 3' primer sequence.  
-[hts_QWindowTrim](./hts_QWindowTrim) - 5' and/or 3' quality score base trimming using windows.  
-[hts_SeqScreener](./hts_SeqScreener): Identify and remove/keep/count contaminants (default phiX).  
-[hts_Stats](./hts_Stats) - Compute read stats.  
-[hts_SuperDeduper](./hts_SuperDeduper): Identify and remove PCR duplicates.  
+hts_AdapterTrimmer: Identify and remove adapter sequences.  
+hts_CutTrim: Discreet 5' and/or 3' basepair trimming.  
+hts_LengthFilter: Remove reads outside of min and/or max length.  
+hts_NTrimmer: Extract the longest subsequence with no Ns.    
+hts_Overlapper: Overlap paired end reads, removing adapters when present.  
+hts_PolyATTrim: Identify and remove polyA/T sequence.  
+hts_Primers: Identify and optionally remove 5' and/or 3' primer sequence.  
+hts_QWindowTrim: 5' and/or 3' quality score base trimming using windows.  
+hts_SeqScreener: Identify and remove/keep/count contaminants (default phiX).  
+hts_Stats: Compute read stats.  
+hts_SuperDeduper: Identify and remove PCR duplicates.  
 
 We hope in the long run to include any and all needed preprocessing routines.
 
@@ -122,11 +122,22 @@ Lets first make sure that we are in the correct directory.
 cd /share/workshop/adv_scrna/$USER/scrnaseq_processing/
 ```
 
-First we need a few prerequisites.
+First we need a few prerequisites:
+
+### extract_BC_UMI.py python script
+
+The Python script [extract_BC-UMI.py](https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2020-Advanced_Single_Cell_RNA_Seq/master/software_scripts/scripts/extract_BC-UMI.py) first 'extracts' the cell barcode and UMI from the specific read and stores it for safe keeping, then later you can 'insert' the barcode and UMI back to where it belongs in the read.
 
 ```bash
 wget -O /share/workshop/adv_scrna/$USER/HTStream/bin/extract_BC-UMI.py https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2020-Advanced_Single_Cell_RNA_Seq/master/software_scripts/scripts/extract_BC-UMI.py
+chmod +x /share/workshop/adv_scrna/$USER/HTStream/bin/extract_BC-UMI.py
+extract_BC-UMI.py -h
+```
+### Template Switching Oligo sequence
 
+```bash
+mkdir -p /share/workshop/adv_scrna/$USER/scrnaseq_processing/resources/
+wget -O /share/workshop/adv_scrna/$USER/scrnaseq_processing/resources/screen.fa https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2020-Advanced_Single_Cell_RNA_Seq/master/datasets/screen.fa
 ```
 
 ### Counting the number of rRNA reads in a sample
@@ -163,34 +174,59 @@ In HTStream, you can screen (count only) for rRNA in a sample to determine rRNA 
 
 Save this file to your computer, and rename it to 'mouse_rrna.fasta'.
 
-### Workflow Script
+**OR**
+```bash
+wget -O /share/workshop/adv_scrna/$USER/scrnaseq_processing/resources/mouse_rrna.fasta https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2020-Advanced_Single_Cell_RNA_Seq/master/datasets/mouse_rrna.fasta
+```
+### Workflow script
+
 
 ```bash
 hts_Stats -L scRNA.log -N 'compute stats on original dataset' \
-    -1 654_small_S1_L008_R1_001.fastq.gz \
-    -2 654_small_S1_L008_R2_001.fastq.gz | \
-hts_SeqScreener -A scRNA.log -N 'screen for PhiX because I always do' | \
-hts_SeqScreener -A scRNA.log -N 'count the number of rRNA reads' \
-    -r \
-    -s mouse_rrna.fasta | \
+    -1 *_S*_R1_001.fastq.gz \
+    -2 *_S*_R2_001.fastq.gz  | \
+hts_SeqScreener -A scRNA.log -N 'screen for PhiX because I always do' \
+    --check-read-2 | \
 hts_Overlapper -A scRNA.log -N 'overlap reads' | \
-./extract_BC-UMI.py --extract --read 1 --length  28 | \
+extract_BC-UMI.py --extract --read 1 --length  28 | \
 hts_PolyATTrim -A scRNA.log -N 'trim 3 prime plolyA' \
-    --skip_polyA \
-    --no-right \
-    -x 200 | \
+    --skip_polyA  \
+    --no-right -x 100 | \
 hts_NTrimmer -A scRNA.log -N 'Remove any N characters' | \
 hts_QWindowTrim -A scRNA.log -N 'Quality window trim' | \
-hts_SeqScreener -A scRNA.log -N 'Screen out any potential adapter dimers' \
-    -s screen.fa | \
 hts_LengthFilter -A scRNA.log -N 'Removed any read shorter than 50bp' \
-    -m 50 \
-    -s | \
-./extract_BC-UMI.py --insert --read 1 | \
+    -m 50 -s | \
+hts_SeqScreener -A scRNA.log -N 'Screen out any potential adapter dimers' \
+    --check-read-2 \
+    -s screen.fa | \
+hts_SeqScreener -A scRNA.log -N 'count the number of rRNA reads'\
+    -r \
+    --check-read-2 \
+    -s mouse_rrna.fasta | \
+extract_BC-UMI.py --insert --read 1 | \
 hts_Stats -A scRNA.log -N 'final stats' \
-    -f sample_preproc -F
+    -f processed_file -F"
 ```
 
-### Workflow Description
+### Workflow description
 
 As with all our workflows, we run hts_Stats both as the first application and the last application to generate full library stats pre and post processing. After hts_Stats, hts_SeqScreener is run using the default screen of PhiX (better safe to just check and remove), we then run hts_SeqScreener again, this time using a multi-fasta file with ribosomal RNA sequences (see '[Counting the number of rRNA reads in a sample](#counting-the-number-of-rrna-reads-in-a-sample)') and the option '-r' to count but not remove any reads that match the screening file. So far each application run in the workflow so far removes entire reads and does not perform  any trimming. Next hts_Overlapper overlap and remove to remove adapter sequences. We then run the custom script extract_BC_UMI.py in mode --extract to save the barcode and UMI in the read id. The next series of applications then trims/cleans reads, hts_PolyATTrim to remove polyA(T) tails, hts_NTrimmer and hts_QWindowTrim to remove any 'N' bases and low quality respectively. Finally, we run hts_LengthFilter to remove any reads shorter than 50bp (-m 50) and produce reverse complement any reads 2 from discarded read 1 (-s). The custom script extract_BC_UMI.py is run 1 more time this time in --insert mode to put the BC|UMI back into read 1. The resulting fastq files will be exclusively paired-end reads remaining.
+
+### Lets Execute the workflow
+
+```bash
+cd /share/workshop/adv_scrna/$USER/scrnaseq_processing/
+
+wget https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2020-Advanced_Single_Cell_RNA_Seq/master/software_scripts/scripts/scHTStream.sh
+
+mkdir /share/workshop/adv_scrna/$USER/scrnaseq_processing/01-HTStream
+mkdir /share/workshop/adv_scrna/$USER/scrnaseq_processing/01-HTStream/654_small
+
+bash scHTStream.sh
+```
+
+When complete HTStream writes new "preprocessed" file to the out directory and a log.
+
+```bash
+less /share/workshop/adv_scrna/$USER/scrnaseq_processing/01-HTStream/654_small/654_small_scRNA.log
+```
