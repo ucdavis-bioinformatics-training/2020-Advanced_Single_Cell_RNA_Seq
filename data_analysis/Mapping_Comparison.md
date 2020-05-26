@@ -21,7 +21,7 @@ library(ggVennDiagram)
 
 ## Load the Expression Matrix Data and create the combined base Seurat object.
 
-Seurat provides a function `Read10X` to read in 10X data folder. First we read in data from each individual sample folder. First, we initialize the Seurat object (`CreateSeuratObject`) with the raw (non-normalized data). Keep all genes expressed in >= 10 cells. Keep all cells with at least 200 detected genes. Also extracting sample names, calculating and adding in the metadata mitochondrial percentage of each cell. Adding in the metadata batchid and cell cycle. Finally, saving the raw Seurat object.
+Seurat provides a function `Read10X` to read in 10X data folder. First we read in data from each individual sample folder. Then, we initialize the Seurat object (`CreateSeuratObject`) with the raw (non-normalized data). Keep all genes expressed in >= 3 cells. Keep all cells with at least 200 detected genes. Also extracting sample names, calculating and adding in the metadata mitochondrial percentage of each cell. Some QA/QC Finally, saving the raw Seurat object.
 
 
 ```r
@@ -34,8 +34,8 @@ s_cellranger_orig
 ```
 
 ```
-## An object of class Seurat 
-## 15203 features across 4907 samples within 1 assay 
+## An object of class Seurat
+## 15203 features across 4907 samples within 1 assay
 ## Active assay: RNA (15203 features, 0 variable features)
 ```
 
@@ -46,8 +46,8 @@ s_cellranger_hts
 ```
 
 ```
-## An object of class Seurat 
-## 15197 features across 4918 samples within 1 assay 
+## An object of class Seurat
+## 15197 features across 4918 samples within 1 assay
 ## Active assay: RNA (15197 features, 0 variable features)
 ```
 
@@ -59,8 +59,8 @@ s_star_hts
 ```
 
 ```
-## An object of class Seurat 
-## 15118 features across 4099 samples within 1 assay 
+## An object of class Seurat
+## 15118 features across 4099 samples within 1 assay
 ## Active assay: RNA (15118 features, 0 variable features)
 ```
 
@@ -107,13 +107,13 @@ s_salmon_hts
 ```
 
 ```
-## An object of class Seurat 
-## 15634 features across 3918 samples within 1 assay 
+## An object of class Seurat
+## 15634 features across 3918 samples within 1 assay
 ## Active assay: RNA (15634 features, 0 variable features)
 ```
 
 ```r
-# Need to Check Rows names/Col names before merge 
+# Need to Check Rows names/Col names before merge
 
 # they however have different looking cell ids, need to fix
 head(colnames(s_cellranger_orig))
@@ -154,8 +154,8 @@ s_merged
 ```
 
 ```
-## An object of class Seurat 
-## 17597 features across 17842 samples within 1 assay 
+## An object of class Seurat
+## 17597 features across 17842 samples within 1 assay
 ## Active assay: RNA (17597 features, 0 variable features)
 ```
 
@@ -184,8 +184,8 @@ table(s_merged$orig.ident)
 ```
 
 ```
-## 
-##     cellranger cellranger_hts         salmon           star 
+##
+##     cellranger cellranger_hts         salmon           star
 ##           4907           4918           3918           4099
 ```
 
@@ -194,8 +194,8 @@ table(table(sapply(X = strsplit(colnames(s_merged), split = "_"), FUN = "[", 2))
 ```
 
 ```
-## 
-##    1    2    3    4 
+##
+##    1    2    3    4
 ##   55  719  411 3779
 ```
 
@@ -359,40 +359,40 @@ s_merged <- RunPCA(s_merged, features = VariableFeatures(object = s_merged))
 ```
 
 ```
-## PC_ 1 
-## Positive:  Adcyap1, Celf4, Gap43, Kit, Ngfr, Gal, Meg3, Fxyd7, Lynx1, Enah 
-## 	   Spock1, Pcp4, 6330403K07Rik, Mt1, Eno2, Syt2, Map2, Gpx3, Sv2b, S1pr3 
-## 	   Malat1, Fgf1, Dbpht2, Ptn, Cntn1, Scg2, Faim2, S100b, Npy1r, Stx1b 
-## Negative:  Sncg, Ubb, Txn1, Fxyd2, Atp6v0b, Lxn, Sh3bgrl3, Rabac1, Dctn3, Pfn1 
-## 	   Ppia, Fez1, Ndufa11, Cisd1, Ndufa4, Atp6v1f, Atpif1, S100a10, S100a6, Psmb2 
-## 	   Psmb6, Tmem45b, Prdx2, Elob, Nme1, Gabarapl2, Cox6a1, Bex2, Pop5, Bex3 
-## PC_ 2 
-## Positive:  Cntn1, S100b, Nefh, Thy1, Cplx1, Tagln3, Hopx, Sv2b, Ntrk3, Lrrn1 
-## 	   Slc17a7, Nefm, Atp1b1, Atp2b2, Chchd10, Vsnl1, Nat8l, Nefl, Scn8a, Scn1a 
-## 	   Vamp1, Kcna2, Mcam, Scn1b, Endod1, Syt2, Lynx1, Sh3gl2, Scn4b, Cpne6 
-## Negative:  Cd24a, Malat1, Tmem233, Dusp26, Mal2, Prkca, Cd9, Osmr, Tmem158, Nppb 
-## 	   Carhsp1, Ift122, Cd44, Sst, Arpc1b, Calca, Npy2r, Gna14, Atpaf2, Gm525 
-## 	   Gadd45g, Tac1, Bhlhe41, Cd82, Adk, Meg3, Gng2, Nts, Scg2, Sntb1 
-## PC_ 3 
-## Positive:  Gm28661, Gm10925, Rps7-ps3, Gm28437, Rpl10-ps3, Rpl9-ps6, Gm21981, Gm45234, Gm20390, Gm21988 
-## 	   Gm45713, Rps27rt, Gm10177, Gm10288, Gm10175, Uba52, Rnasek, Kxd1, Gm8430, Rpl10a-ps1 
-## 	   Nme2, Atp5o, Rpl17-ps3, Rps6-ps4, Gstp2, Gm12918, Gm29216, Rpl23a-ps3, Rpl27-ps3, Gm9843 
-## Negative:  Aldoa, Malat1, Atp5o.1, Meg3, Minos1, Usmg5, H2afz, 2010107E04Rik, Aes, Sept7 
-## 	   Atp5f1, Fam103a1, Tusc5, Fam96b, March2, 2410015M20Rik, Tmem55b, 1500011K16Rik, AC160336.1, Hist1h2bc 
-## 	   1110008F13Rik, H2afj, 3632451O06Rik, H2afy, Pqlc1, March6, Tmem55a, Sssca1, 1700020I14Rik, Fam19a4 
-## PC_ 4 
-## Positive:  Tspan8, Jak1, Etv1, Resp18, Tmem233, Nppb, Adk, Sst, Skp1a, Scg2 
-## 	   Gm525, Osmr, Nts, Cystm1, Tesc, Npy2r, Nefh, Nsg1, S100b, Ift122 
-## 	   Map7d2, Thy1, Blvrb, Htr1f, Cd82, Prkca, Calm1, Ddah1, Atp1b1, Cysltr2 
-## Negative:  Gm7271, P2ry1, Rarres1, Th, Fxyd6, Tafa4, Wfdc2, Id4, Gfra2, Zfp521 
-## 	   Iqsec2, Rgs5, Rgs10, Tox3, Kcnd3, Cdkn1a, Rasgrp1, Alcam, Pou4f2, C1ql4 
-## 	   Rprm, Synpr, D130079A08Rik, Piezo2, Spink2, Ceacam10, Camk2n1, Bok, Grik1, Ptpre 
-## PC_ 5 
-## Positive:  Basp1, Gm765, Prkar2b, Cd44, Rab27b, Calcb, Ctxn3, Lpar3, Ly86, Calca 
-## 	   Nefl, Aplp2, Mt3, Rgs7, Anks1b, Mrgprd, Nrn1l, Cd55, Nrn1, Gap43 
-## 	   Grik1, Serping1, Nmb, Klhl5, Rspo2, Spock3, Otoa, Ptprt, Synpr, S100a7l2 
-## Negative:  Nppb, Sst, Gm525, Nts, Osmr, Hpcal1, Npy2r, Htr1f, Jak1, Cysltr2 
-## 	   Ptprk, Tesc, Il31ra, Resp18, Tspan8, Blvrb, Cmtm7, Ada, Etv1, Fam178b 
+## PC_ 1
+## Positive:  Adcyap1, Celf4, Gap43, Kit, Ngfr, Gal, Meg3, Fxyd7, Lynx1, Enah
+## 	   Spock1, Pcp4, 6330403K07Rik, Mt1, Eno2, Syt2, Map2, Gpx3, Sv2b, S1pr3
+## 	   Malat1, Fgf1, Dbpht2, Ptn, Cntn1, Scg2, Faim2, S100b, Npy1r, Stx1b
+## Negative:  Sncg, Ubb, Txn1, Fxyd2, Atp6v0b, Lxn, Sh3bgrl3, Rabac1, Dctn3, Pfn1
+## 	   Ppia, Fez1, Ndufa11, Cisd1, Ndufa4, Atp6v1f, Atpif1, S100a10, S100a6, Psmb2
+## 	   Psmb6, Tmem45b, Prdx2, Elob, Nme1, Gabarapl2, Cox6a1, Bex2, Pop5, Bex3
+## PC_ 2
+## Positive:  Cntn1, S100b, Nefh, Thy1, Cplx1, Tagln3, Hopx, Sv2b, Ntrk3, Lrrn1
+## 	   Slc17a7, Nefm, Atp1b1, Atp2b2, Chchd10, Vsnl1, Nat8l, Nefl, Scn8a, Scn1a
+## 	   Vamp1, Kcna2, Mcam, Scn1b, Endod1, Syt2, Lynx1, Sh3gl2, Scn4b, Cpne6
+## Negative:  Cd24a, Malat1, Tmem233, Dusp26, Mal2, Prkca, Cd9, Osmr, Tmem158, Nppb
+## 	   Carhsp1, Ift122, Cd44, Sst, Arpc1b, Calca, Npy2r, Gna14, Atpaf2, Gm525
+## 	   Gadd45g, Tac1, Bhlhe41, Cd82, Adk, Meg3, Gng2, Nts, Scg2, Sntb1
+## PC_ 3
+## Positive:  Gm28661, Gm10925, Rps7-ps3, Gm28437, Rpl10-ps3, Rpl9-ps6, Gm21981, Gm45234, Gm20390, Gm21988
+## 	   Gm45713, Rps27rt, Gm10177, Gm10288, Gm10175, Uba52, Rnasek, Kxd1, Gm8430, Rpl10a-ps1
+## 	   Nme2, Atp5o, Rpl17-ps3, Rps6-ps4, Gstp2, Gm12918, Gm29216, Rpl23a-ps3, Rpl27-ps3, Gm9843
+## Negative:  Aldoa, Malat1, Atp5o.1, Meg3, Minos1, Usmg5, H2afz, 2010107E04Rik, Aes, Sept7
+## 	   Atp5f1, Fam103a1, Tusc5, Fam96b, March2, 2410015M20Rik, Tmem55b, 1500011K16Rik, AC160336.1, Hist1h2bc
+## 	   1110008F13Rik, H2afj, 3632451O06Rik, H2afy, Pqlc1, March6, Tmem55a, Sssca1, 1700020I14Rik, Fam19a4
+## PC_ 4
+## Positive:  Tspan8, Jak1, Etv1, Resp18, Tmem233, Nppb, Adk, Sst, Skp1a, Scg2
+## 	   Gm525, Osmr, Nts, Cystm1, Tesc, Npy2r, Nefh, Nsg1, S100b, Ift122
+## 	   Map7d2, Thy1, Blvrb, Htr1f, Cd82, Prkca, Calm1, Ddah1, Atp1b1, Cysltr2
+## Negative:  Gm7271, P2ry1, Rarres1, Th, Fxyd6, Tafa4, Wfdc2, Id4, Gfra2, Zfp521
+## 	   Iqsec2, Rgs5, Rgs10, Tox3, Kcnd3, Cdkn1a, Rasgrp1, Alcam, Pou4f2, C1ql4
+## 	   Rprm, Synpr, D130079A08Rik, Piezo2, Spink2, Ceacam10, Camk2n1, Bok, Grik1, Ptpre
+## PC_ 5
+## Positive:  Basp1, Gm765, Prkar2b, Cd44, Rab27b, Calcb, Ctxn3, Lpar3, Ly86, Calca
+## 	   Nefl, Aplp2, Mt3, Rgs7, Anks1b, Mrgprd, Nrn1l, Cd55, Nrn1, Gap43
+## 	   Grik1, Serping1, Nmb, Klhl5, Rspo2, Spock3, Otoa, Ptprt, Synpr, S100a7l2
+## Negative:  Nppb, Sst, Gm525, Nts, Osmr, Hpcal1, Npy2r, Htr1f, Jak1, Cysltr2
+## 	   Ptprk, Tesc, Il31ra, Resp18, Tspan8, Blvrb, Cmtm7, Ada, Etv1, Fam178b
 ## 	   Cavin1, Camk2n1, Gstt2, Nbl1, Pde4c, Sntb1, Rarres1, Lgals1, Ddah1, Gm7271
 ```
 
@@ -415,10 +415,10 @@ s_merged <- FindClusters(s_merged, resolution = 0.5)
 
 ```
 ## Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
-## 
+##
 ## Number of nodes: 17842
 ## Number of edges: 691328
-## 
+##
 ## Running Louvain algorithm...
 ## Maximum modularity in 10 random starts: 0.9579
 ## Number of communities: 31
@@ -499,20 +499,20 @@ sessionInfo()
 ## R version 4.0.0 (2020-04-24)
 ## Platform: x86_64-apple-darwin17.0 (64-bit)
 ## Running under: macOS Catalina 10.15.4
-## 
+##
 ## Matrix products: default
 ## BLAS:   /Library/Frameworks/R.framework/Versions/4.0/Resources/lib/libRblas.dylib
 ## LAPACK: /Library/Frameworks/R.framework/Versions/4.0/Resources/lib/libRlapack.dylib
-## 
+##
 ## locale:
 ## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
-## 
+##
 ## attached base packages:
 ## [1] stats     graphics  grDevices datasets  utils     methods   base     
-## 
+##
 ## other attached packages:
 ## [1] ggVennDiagram_0.3 tximport_1.16.0   Seurat_3.1.5     
-## 
+##
 ## loaded via a namespace (and not attached):
 ##   [1] nlme_3.1-148         tsne_0.1-3           sf_0.9-3            
 ##   [4] bit64_0.9-7          RcppAnnoy_0.0.16     RColorBrewer_1.1-2  
@@ -528,7 +528,7 @@ sessionInfo()
 ##  [34] rmarkdown_2.1        pkgconfig_2.0.3      htmltools_0.4.0     
 ##  [37] htmlwidgets_1.5.1    rlang_0.4.6          farver_2.0.3        
 ##  [40] zoo_1.8-8            jsonlite_1.6.1       ica_1.0-2           
-##  [43] dplyr_0.8.5          magrittr_1.5         futile.logger_1.4.3 
+##  [43] dplyr_0.8.5          magrittr_1.5         futile.logger_1.4.3
 ##  [46] patchwork_1.0.0      Matrix_1.2-18        Rcpp_1.0.4.6        
 ##  [49] munsell_0.5.0        ape_5.3              reticulate_1.15     
 ##  [52] lifecycle_0.2.0      stringi_1.4.6        yaml_2.2.1          
@@ -549,4 +549,3 @@ sessionInfo()
 ##  [97] units_0.6-6          cluster_2.1.0        globals_0.12.5      
 ## [100] fitdistrplus_1.1-1   ellipsis_0.3.1       ROCR_1.0-11
 ```
-
