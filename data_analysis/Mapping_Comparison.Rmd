@@ -1,0 +1,175 @@
+---
+title: "Mapping_Comparison"
+author: "Bioinformatics Core"
+output:
+    html_document:
+      keep_md: TRUE
+---
+
+
+# Single Cell Analysis with Seurat and some custom code!
+
+[Seurat](http://satijalab.org/seurat/) is a popular R package that is designed for QC, analysis, and exploration of single cell data. Seurat aims to enable users to identify and interpret sources of heterogeneity from single cell transcriptomic measurements, and to integrate diverse types of single cell data. Further, the authors provide several [tutorials](https://satijalab.org/seurat/vignettes.html) on their website.
+
+We start with loading needed libraries for R
+```{r, warning=FALSE,error=FALSE,message=FALSE}
+library(Seurat)
+library(tximport)
+library(ggVennDiagram)
+```
+
+## Load the Expression Matrix Data and create the combined base Seurat object.
+
+Seurat provides a function `Read10X` to read in 10X data folder. First we read in data from each individual sample folder. First, we initialize the Seurat object (`CreateSeuratObject`) with the raw (non-normalized data). Keep all genes expressed in >= 10 cells. Keep all cells with at least 200 detected genes. Also extracting sample names, calculating and adding in the metadata mitochondrial percentage of each cell. Adding in the metadata batchid and cell cycle. Finally, saving the raw Seurat object.
+
+```{r}
+## Cellranger
+cellranger_orig <- Read10X_h5("Adv_comparison_outputs/654/outs/filtered_feature_bc_matrix.h5")
+# If hdf5 isn't working read in from the mtx files
+#cellranger_orig <- Read10X("Adv_comparison_outputs/654/outs/filtered_feature_bc_matrix")
+s_cellranger_orig <- CreateSeuratObject(counts = cellranger_orig, min.cells = 3, min.features = 200, project = "cellranger")
+s_cellranger_orig
+
+cellranger_htstream <- Read10X_h5("Adv_comparison_outputs/654_htstream/outs/filtered_feature_bc_matrix.h5")
+s_cellranger_hts <- CreateSeuratObject(counts = cellranger_htstream, min.cells = 3, min.features = 200, project = "cellranger_hts")
+s_cellranger_hts
+
+## STAR
+star <- Read10X("Adv_comparison_outputs/654_htstream_star/outs/filtered_feature_bc_matrix")
+s_star_hts <- CreateSeuratObject(counts = star, min.cells = 3, min.features = 200, project = "star")
+s_star_hts
+
+## SALMON
+txi <- tximport("Adv_comparison_outputs/654_htstream_salmon_decoys/alevin/quants_mat.gz", type="alevin")
+
+## salmon is in ensembl IDs, need to convert to gene symbol
+head(rownames(txi$counts))
+ens2symbol <- read.table("ens2sym.txt",sep="\t",header=T,as.is=T)
+map <- ens2symbol$Gene.name[match(rownames(txi$counts),ens2symbol$Gene.stable.ID.version)]
+
+txi_counts <- txi$counts[-which(duplicated(map)),]
+map <- map[-which(duplicated(map))]
+rownames(txi_counts) <- map
+dim(txi_counts)
+
+s_salmon_hts <- CreateSeuratObject(counts = txi_counts , min.cells = 3, min.features = 200, project = "salmon")
+s_salmon_hts
+
+# Need to Check Rows names/Col names before merge 
+
+# they however have different looking cell ids, need to fix
+head(colnames(s_cellranger_orig))
+head(colnames(s_star_hts))
+head(colnames(s_salmon_hts))
+s_cellranger_orig <- RenameCells(s_cellranger_orig, new.names = sapply(X = strsplit(colnames(s_cellranger_orig), split = "-"), FUN = "[", 1))
+
+s_cellranger_hts <- RenameCells(s_cellranger_hts, new.names = sapply(X = strsplit(colnames(s_cellranger_hts), split = "-"), FUN = "[", 1))
+
+
+## Merge the dataset
+s_merged <- merge(s_cellranger_orig, y = c(s_cellranger_hts, s_star_hts, s_salmon_hts), add.cell.ids = c("cr.orig", "cr.hts", "star.hts", "salmon.hts"), project = "MapTest")
+s_merged
+
+head(colnames(s_merged))
+tail(colnames(s_merged))
+table(s_merged$orig.ident)
+table(table(sapply(X = strsplit(colnames(s_merged), split = "_"), FUN = "[", 2)))
+```
+
+### The percentage of reads that map to the mitochondrial genome
+
+* Low-quality / dying cells often exhibit extensive mitochondrial content
+* We calculate mitochondrial QC metrics with the PercentageFeatureSet function, which calculates the percentage of counts originating from a set of features.
+* We use the set of all genes, in mouse these genes can be identified as those that begin with 'mt', in human data they begin with MT.
+
+```{r}
+s_merged$percent.mito <- PercentageFeatureSet(s_merged, pattern = "^mt-")
+```
+
+### Lets spend a little time getting to know the Seurat object.
+
+The Seurat object is the center of each single cell analysis. It stores __all__ information associated with the dataset, including data, annotations, analyses, etc. The R function slotNames can be used to view the slot names within an object.
+
+```{r}
+slotNames(s_merged)
+```
+
+```{r}
+head(s_merged[[]])
+head(s_merged@meta.data)
+```
+
+#### Question(s)
+
+1. What slots are empty, what slots have data?
+2. What columns are available in meta.data?
+3. Look up the help documentation for subset?
+
+
+## Now lets do some basic comparisons. Do they share the same cellbarcodes?
+```{r}
+ggVennDiagram(list("cr_orig"=colnames(s_cellranger_orig),"cr_hts"=colnames(s_cellranger_hts), "star_hts"=colnames(s_star_hts), "salmon_hts"=colnames(s_salmon_hts)))
+
+cr_orig_genes <- rowSums(as.matrix(GetAssayData(subset(s_merged, cells=colnames(s_merged)[s_merged$orig.ident=="cellranger"]))))
+cr_hts_genes <- rowSums(as.matrix(GetAssayData(subset(s_merged, cells=colnames(s_merged)[s_merged$orig.ident=="cellranger_hts"]))))
+star_hts_genes <- rowSums(as.matrix(GetAssayData(subset(s_merged, cells=colnames(s_merged)[s_merged$orig.ident=="star"]))))
+salmon_hts_genes <- rowSums(as.matrix(GetAssayData(subset(s_merged, cells=colnames(s_merged)[s_merged$orig.ident=="salmon"]))))
+
+minReads=0
+ggVennDiagram(list("cr_orig"=names(cr_orig_genes[cr_orig_genes>minReads]),"cr_hts"=names(cr_hts_genes[cr_hts_genes>minReads]), "star_hts"=names(star_hts_genes[star_hts_genes>minReads]), "salmon_hts"=names(salmon_hts_genes[salmon_hts_genes>minReads])))
+
+FeatureScatter(
+  s_merged, "nCount_RNA", "nFeature_RNA",
+  pt.size = 0.5)
+```
+
+#### Question(s)
+
+1. Spend a minute playing with minReads, see how the data changes.
+2. What are the sum of UMIs for each?
+3. Look up the help documentation for subset?
+
+
+### Lets take a look at some other metadata
+
+```{r}
+RidgePlot(s_merged, features="nCount_RNA")
+RidgePlot(s_merged, features="nFeature_RNA")
+RidgePlot(s_merged, features="percent.mito")
+```
+
+
+```{r fig.height=12}
+VlnPlot(
+  s_merged,
+  features = c("nFeature_RNA", "nCount_RNA","percent.mito"),
+  ncol = 1, pt.size = 0.3)
+```
+
+
+```{r}
+s_merged <- NormalizeData(s_merged, normalization.method = "LogNormalize", scale.factor = 10000)
+s_merged <- FindVariableFeatures(s_merged, selection.method = "vst", nfeatures = 2000)
+
+all.genes <- rownames(s_merged)
+s_merged <- ScaleData(s_merged, features = all.genes)
+s_merged <- RunPCA(s_merged, features = VariableFeatures(object = s_merged))
+use.pcs = 1:30
+s_merged <- FindNeighbors(s_merged, dims = use.pcs)
+s_merged <- FindClusters(s_merged, resolution = 0.5)
+s_merged <- RunUMAP(s_merged, dims = use.pcs)
+DimPlot(s_merged, reduction = "umap")
+DimPlot(s_merged, group.by = "orig.ident", reduction = "umap")
+```
+
+## Finally, save the original object, write out a tab-delimited table that could be read into excel, and view the object.
+```{r}
+## Original dataset in Seurat class, with no filtering
+save(s_merged,file="mapping_comparison_object.RData")
+```
+
+## Session Information
+```{r}
+sessionInfo()
+```
+

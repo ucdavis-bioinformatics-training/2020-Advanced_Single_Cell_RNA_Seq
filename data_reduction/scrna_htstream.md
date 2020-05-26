@@ -1,16 +1,17 @@
----
-title: scRNA HTSteam Workflow
----
-
-This assumes you've first complete this [page](project_setup_counting.md)
-
-# A [HTStream](https://github.com/ibest/HTStream) workflow To Process single cell RNA libraries
+### First lets get an interactive session on the cluster
 
 Login to tadpole and navigate to your directory on the share space.
 
 ```bash
 cd /share/workshop/adv_scrna/$USER
+
+srun -t 1-00:00:00 -c 4 -n 1 --mem 16000 --partition production --account adv_scrna_workshop --reservation adv_scrna_workshop  --pty /bin/bash
 ```
+
+This assumes you've first complete this [page](project_setup_counting.md)
+
+# A [HTStream](https://github.com/ibest/HTStream) workflow To Process single cell RNA libraries
+
 
 ## Installing HTStream version 1.3.0-Beta (branch overlapper_readid_fixes)
 

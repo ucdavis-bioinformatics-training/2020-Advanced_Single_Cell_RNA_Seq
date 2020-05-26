@@ -1,4 +1,16 @@
+
+Login to tadpole and navigate to your directory on the share space.
+
+```bash
+cd /share/workshop/adv_scrna/$USER
+
+srun -t 1-00:00:00 -c 4 -n 1 --mem 16000 --partition production --account adv_scrna_workshop --reservation adv_scrna_workshop  --pty /bin/bash
+```
+
+This assumes you've first complete this [page](scrna_htstream.md)
+
 # Generating Gene Expression Matrices
+
 
 Unfortunately, Cellranger expects a very specific filename format, the bcl2fasq output, so we need to rename the htstream output files.
 

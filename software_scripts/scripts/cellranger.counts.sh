@@ -33,7 +33,7 @@ call="cellranger count \
       --transcriptome=${transcriptome} \
       --fastqs=${fastqs} \
       --localcores=4 \
-      --localmem=64"
+      --localmem=15"
 
     ## Some other parameters that may be usefull/needed
     ## --expect-cells=NUM, number of cells expected

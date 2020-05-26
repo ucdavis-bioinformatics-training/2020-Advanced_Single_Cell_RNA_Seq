@@ -28,7 +28,7 @@ The main commands we will be using are srun, sbatch, squeue, scancel, and sacct.
 
 Our cluster requires that you specify a time limit for your job. If your job exceeds these limits, then it will be killed. So try running the following to create an interactive session on a node:
 
-    srun -t 00:30:00 -c 4 -n 1 --mem 2000 --partition production --account intro_scrna_workshop --reservation intro_scrna_workshop  --pty /bin/bash
+    srun -t 1-00:00:00 -c 4 -n 1 --mem 16000 --partition production --account adv_scrna_workshop --reservation adv_scrna_workshop  --pty /bin/bash
 
 This command is requesting a compute node with a time limit of 30 minutes (-t), one processor (-c), a max memory of 2Gb [2000] (--mem), and then finally, specifying a shell to run in a terminal ("--pty" option). Run this command to get to a compute node when you want to run jobs on the command-line directly.
 
@@ -60,8 +60,8 @@ Generally, we do not use any options for sbatch ... we typically give it a scrip
 #SBATCH --time=60 # Acceptable time formats include "minutes", "minutes:seconds", "hours:minutes:seconds", "days-hours", "days-hours:minutes" and "days-hours:minutes:seconds".
 #SBATCH --mem=2000 # Memory pool for all cores (see also --mem-per-cpu)
 #SBATCH --partition=production # cluster partition
-#SBATCH --account=intro_scrna_workshop # cluster account to use for the job
-#SBATCH --reservation=intro_scrna_workshop # the workshop reservation
+#SBATCH --account=adv_scrna_workshop # cluster account to use for the job
+#SBATCH --reservation=adv_scrna_workshop # the workshop reservation
 ##SBATCH --array=1-16 # Task array indexing, see https://slurm.schedmd.com/job_array.html, the double # means this line is commented out
 #SBATCH --output=stdout.out # File to which STDOUT will be written
 #SBATCH --error=stderr.err # File to which STDERR will be written
