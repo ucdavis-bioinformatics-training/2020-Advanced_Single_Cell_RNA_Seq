@@ -58,7 +58,7 @@ navigation:
 
   - heading: Data analysis
   - title: scRNA analysis prepare
-    url: data_analysis/scrna_analysis_prepare.md
+    url: data_analysis/scrna_analysis_prepare
   - title: Mapping Comparison
     url: data_analysis/Mapping_Comparison_fixed
 
