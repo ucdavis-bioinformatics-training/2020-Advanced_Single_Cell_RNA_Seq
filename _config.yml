@@ -48,11 +48,13 @@ navigation:
 
   - heading: Data Reduction
   - title: Generating Expression Matrices
-  - url: Expression_Matrix.md
+    url: data_reduction/Expression_Matrix
   - title: Expression project setup
     url: data_reduction/project_setup_counting
   - title: Preprocessing reads with HTStream
     url: data_reduction/scrna_htstream
+  - title: Generating Expression Tables
+    url: data_reduction/scMapping
 
   - heading: Data analysis
   - title: Coming

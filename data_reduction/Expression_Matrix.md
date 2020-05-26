@@ -8,7 +8,7 @@ Statistical analyses of scRNA-seq data take as their starting point an __express
 <p class="caption">Flowchart of scRNAseq analysis</p>
 </div>
 
-### Preprocessing and mapping reads
+## Preprocessing and mapping reads
 
 Raw fastq files first need to be preprocessed, extracting any elements that are a part of the sequence read.
 
@@ -24,7 +24,7 @@ For 10X genomics datasets, there is the [cellranger](https://support.10xgenomics
 
 __Note__, if _spike-ins_ are used, the _spike-in_ sequences should be added to the reference sequence prior to mapping.
 
-### Gene Counting
+## Gene Counting
 
 Cellranger, STAR solo, and Salmon Alevin all quantify the expression level of each gene for
 each cell taking into account UMI sequence as a part of its output.

@@ -178,6 +178,7 @@ Save this file to your computer, and rename it to 'mouse_rrna.fasta'.
 ```bash
 wget -O /share/workshop/adv_scrna/$USER/scrnaseq_processing/resources/mouse_rrna.fasta https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2020-Advanced_Single_Cell_RNA_Seq/master/datasets/mouse_rrna.fasta
 ```
+
 ### Workflow script
 
 

@@ -1,10 +1,44 @@
-## 10X Genomics generation of expression matrix with cellranger
+# Generating Gene Expression Matrices
 
-[cellranger](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/what-is-cell-ranger)
+Unfortunately, Cellranger expects a very specific filename format, the bcl2fasq output, so we need to rename the htstream output files.
 
-10X Genomics cellranger uses the [STAR](https://github.com/alexdobin/STAR) aligner to map reads to a genome after first preprocessing them (extracting cell and UMI sequences).
+```bash
+mv /share/workshop/adv_scrna/msettles/scrnaseq_processing/01-HTStream/654_small_htstream/654_small_htstream_R1.fastq.gz  /share/workshop/adv_scrna/msettles/scrnaseq_processing/01-HTStream/654_small_htstream/654_small_htstream_S1_L001_R1_001.fastq.gz
+mv /share/workshop/adv_scrna/msettles/scrnaseq_processing/01-HTStream/654_small_htstream/654_small_htstream_R2.fastq.gz  /share/workshop/adv_scrna/msettles/scrnaseq_processing/01-HTStream/654_small_htstream/654_small_htstream_S1_L001_R2_001.fastq.gz
+```
 
-cellranger  version 3 has many sub-applications
+### For the sake of time (building references can take hours) we are going to link a finished references, but when time allows
+
+```bash
+cd /share/workshop/adv_scrna/$USER/scrnaseq_processing
+ln -s /share/biocore/workshops/2020_scRNAseq/Reference .
+```
+
+### When time allows, lets buld a reference for Mouse base on Ensembl release-100
+
+First lets setup a References folder for our experiment.
+```bash
+mkdir /share/workshop/adv_scrna/$USER/scrnaseq_processing/reference
+cd /share/workshop/adv_scrna/$USER/scrnaseq_processing/reference
+```
+
+We'll need to download and extract a number of reference files.
+```bash
+wget ftp://ftp.ensembl.org/pub/release-100/fasta/mus_musculus/dna/Mus_musculus.GRCm38.dna.primary_assembly.fa.gz
+wget ftp://ftp.ensembl.org/pub/release-100/gtf/mus_musculus/Mus_musculus.GRCm38.100.gtf.gz
+ftp://ftp.ensembl.org/pub/release-100/fasta/mus_musculus/cdna/Mus_musculus.GRCm38.cdna.all.fa.gz
+gunzip Mus_musculus.GRCm38.100.gtf.gz
+gunzip Mus_musculus.GRCm38.dna.primary_assembly.fa.gz
+gunzip Mus_musculus.GRCm38.cdna.all.fa.gz
+```
+
+## 10X Genomics - cellranger
+
+Description of cellranger can be found [here](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/what-is-cell-ranger)
+
+10X Genomics cellranger uses the [STAR](https://github.com/alexdobin/STAR) aligner under the hood to map reads to a genome after first preprocessing them (extracting cell and UMI sequences).
+
+cellranger version 3 has many sub-applications
 
 1. cellranger mkfastq
 
@@ -24,7 +58,43 @@ cellranger  version 3 has many sub-applications
 11. cellranger upload
 12. cellranger sitecheck
 
-### Cell barcode and UMI filtering
+### Building indexes for cellranger (takes a long time)
+10X Genomics provides pre-built references for human and mouse genomes to use with Cell Ranger. Researchers can make custom reference genomes for additional species or add custom marker genes of interest to the reference, e.g. GFP. The following tutorial outlines the steps to build a custom reference using the cellranger mkref pipeline.
+
+```bash
+cd /share/workshop/adv_scrna/$USER/scrnaseq_processing/reference
+
+module load cellranger/3.1.0
+
+cellranger mkgtf Mus_musculus.GRCm38.100.gtf Mus_musculus.GRCm38.100.filtered.gtf \
+   --attribute=gene_biotype:protein_coding \
+   --attribute=gene_biotype:lincRNA \
+   --attribute=gene_biotype:antisense \
+   --attribute=gene_biotype:IG_LV_gene \
+   --attribute=gene_biotype:IG_V_gene \
+   --attribute=gene_biotype:IG_V_pseudogene \
+   --attribute=gene_biotype:IG_D_gene \
+   --attribute=gene_biotype:IG_J_gene \
+   --attribute=gene_biotype:IG_J_pseudogene \
+   --attribute=gene_biotype:IG_C_gene \
+   --attribute=gene_biotype:IG_C_pseudogene \
+   --attribute=gene_biotype:TR_V_gene \
+   --attribute=gene_biotype:TR_V_pseudogene \
+   --attribute=gene_biotype:TR_D_gene \
+   --attribute=gene_biotype:TR_J_gene \
+   --attribute=gene_biotype:TR_J_pseudogene \
+   --attribute=gene_biotype:TR_C_gene
+
+cellranger mkref \
+   --genome=GRCm38.cellranger \
+   --fasta=Mus_musculus.GRCm38.dna.primary_assembly.fa \
+   --genes=Mus_musculus.GRCm38.100.filtered.gtf \
+   --ref-version=3.1.0
+```
+
+### Counting (expression matrix) with cellranger
+
+#### Cell barcode and UMI filtering
 
 * Cell barcodes
 	* Must be on static list of known cell barcode sequences
@@ -35,9 +105,6 @@ cellranger  version 3 has many sub-applications
 	* Must not contain N
 	* Must not contain bases with base quality < 10
 	*	UMIs that are 1 mismatch away from a higher-count UMI are corrected to that UMI if they share a cell barcode and gene.
-
-
-### Alignment
 
 #### Genome Alignment
 cellranger uses an aligner called STAR, which performs splicing-aware alignment of reads to the genome. cellranger uses the transcript annotation GTF to bucket the reads into exonic, intronic, and intergenic, and by whether the reads align (confidently) to the genome. A read is exonic if at least 50% of it intersects an exon, intronic if it is non-exonic and intersects an intron, and intergenic otherwise.
@@ -57,7 +124,6 @@ cellranger further aligns exonic reads to annotated transcripts, looking for com
 	* Count only the unique UMIs as unique RNA molecules
 	* These UMI counts form an unfiltered gene-barcode matrix.
 
-
 ### Filtering cells (the 10x way)
 
 cellranger 3.0 introduces and improved cell-calling algorithm that is better able to identify populations of low RNA content cells, especially when low RNA content cells are mixed into a population of high RNA content cells. For example, tumor samples often contain large tumor cells mixed with smaller tumor infiltrating lymphocytes (TIL) and researchers may be particularly interested in the TIL population. The new algorithm is based on the EmptyDrops method (Lun et al., 2018).
@@ -74,11 +140,11 @@ In the second step, a set of barcodes with low UMI counts that likely represent 
 Below is an example of a challenging cell-calling scenario where 300 high RNA content 293T cells are mixed with 2000 low RNA content PBMC cells. On the left is the cell calling result with the cell calling algorithm prior to cellranger 3.0 and on the right is the current cellranger 3.0 result. You can see that low RNA content cells are successfully identified by the new algorithm.
 
 <p float="center">
-  <img src="figures/knee-plot-old-cell-calling.png" width="300" />
-  <img src="figures/knee-plot-new-cell-calling.png" width="300" />
+  <img src="figures/knee-plot-old-cell-calling.png" width="40%" />
+  <img src="figures/knee-plot-new-cell-calling.png" width="40%" />
 </p>
 
-### Matrix output
+#### Matrix output
 
 | Type			| Description |
 |:----- 		|:------ |
@@ -91,7 +157,9 @@ With 3 files needed to completely describe each gene x cell matrix
 - features.tsv.gz
 - barcode.tsv.gz
 
-### Bam output
+**OR** a single HDF5 (Hierarchical Data Format). A HDF5 Feature Barcode Matrix Format file for each raw and filtered datasets is also provided.
+
+#### Bam output
 
 10x Chromium cellular and molecular barcode information for each read is stored as TAG fields:
 
@@ -130,13 +198,10 @@ The following are feature barcoding TAG fields which are not aligned to the geno
 
 #### An example read
 
-Cell Ranger Version 2
-		J00113:284:HG27NBBXX:8:2202:16741:8594 1040	1	4491502	255	101M	*	0	0	ACTGGACAGTGATTGTGGGGAGCAAGTCCCTCAAGGCATTTAAAACAAAAATCTCGTGTAGCCCCTCAACTGTTCAAGTGGCAGACAAAATAAATTACCAT	-A-AAJJJFAFA-F<<<JFFJFA-AF)JFFAJJFJAFFA7<JFFJA<JJFA<F<JFJJFAJAJFJFFJFJJJJJJJFJJJJJJFJFJFAFJFJJJJF<<<A	NH:i:1	HI:i:1	AS:i:99	nM:i:0	TX:Z:ENSMUST00000027035,+2455,101M;ENSMUST00000195555,+1624,101M;ENSMUST00000192650,+3029,101M	GX:Z:ENSMUSG00000025902	GN:Z:Sox17	RE:A:E	CR:Z:CAAGATCTCGCAAACT	CY:Z:AAFFFJJJJJJJJJJJ	CB:Z:CAAGATCTCGCAAACT-1	UR:Z:GCCGAGACCT	UY:Z:JJJJJJJJJJ	UB:Z:GCCGAGACCT	BC:Z:CAGCATCA	QT:Z:AAFFFFJJ	TR:Z:TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTAAAACTACCAGGAGGTATTTCATAGCGAGAAAACACACGCCC	TQ:Z:JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ-----------7-7<))--------77---))7<AA7A--))))	RG:Z:654:MissingLibrary:1:HG27NBBXX:8
-
 Cell Ranger Version 3
 		J00113:284:HG27NBBXX:8:2202:16741:8594	1040	1	4491502	255	101M	*	0	0	ACTGGACAGTGATTGTGGGGAGCAAGTCCCTCAAGGCATTTAAAACAAAAATCTCGTGTAGCCCCTCAACTGTTCAAGTGGCAGACAAAATAAATTACCAT	-A-AAJJJFAFA-F<<<JFFJFA-AF)JFFAJJFJAFFA7<JFFJA<JJFA<F<JFJJFAJAJFJFFJFJJJJJJJFJJJJJJFJFJFAFJFJJJJF<<<A	NH:i:1	HI:i:1	AS:i:99	nM:i:0	TX:Z:ENSMUST00000027035,+2455,101M;ENSMUST00000192650,+3029,101M;ENSMUST00000195555,+1624,101M	GX:Z:ENSMUSG00000025902	GN:Z:Sox17	fx:Z:ENSMUSG00000025902	RE:A:E	li:i:0	BC:Z:CAGCATCA	QT:Z:AAFFFFJJ	CR:Z:CAAGATCTCGCAAACT	CY:Z:AAFFFJJJJJJJJJJJ	CB:Z:CAAGATCTCGCAAACT-1	UR:Z:GCCGAGACCT	UY:Z:JJJJJJJJJJ	UB:Z:GCCGAGACCT	xf:i:17RG:Z:654:0:1:HG27NBBXX:8
 
-### 10X genomics sample report
+#### 10X genomics sample report
 
 Summary of the alignment and assignment of reads to cells and genes are present in the metrics_summary.csv.
 
@@ -167,51 +232,165 @@ Summary of the alignment and assignment of reads to cells and genes are present 
 
 Cell ranger does produce a pretty html report with the same statistics and some "analysis".
 
-[Cell Ranger V2 web summary](web_summaryV2.html)
-
-[Cell Ranger V3 web summary](web_summaryV3.html)
-
-## Exercises
+### Exercises
 
 1. Log into tadpole with the username/password given
 
     ```bash
+    # working folder
     cd /share/workshop/adv_scrna/$USER/scrnaseq_processing
     ```
 
-2. Load and review cellranger's sub-applications and help docs
+2. Load the module for cellranger and review cellranger's sub-applications and help docs
 
-3. Review the [cellranger-counts.sh](https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2020-Intro_Single_Cell_RNA_Seq/master/software_scripts/scripts/cellranger-counts.sh) script used to map fastq files.
+3. Review the [cellranger.counts_orig.sh](https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2020-Advanced_Single_Cell_RNA_Seq/master/software_scripts/scripts/cellranger.counts_orig.sh) script to map the original fastq files.
 
-4. Copy contents of the script to your **scrnaseq_example** folder and do a test run.
+4. Copy contents of the script to your the working folder and run it.
 
-5. Link completed result folders to your scrnaseq_example folders.
+5. Review the [cellranger.counts.sh](https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2020-Advanced_Single_Cell_RNA_Seq/master/software_scripts/scripts/cellranger.counts.sh)  script to map the HTStream preprocessed fastq files.
+
+6. Copy contents of the script to your the working folder and run it.
+
+## Mapping with Star Solo
+
+[STARsolo](https://github.com/alexdobin/STAR/blob/2.7.3a/docs/STARsolo.md) is a turnkey solution for analyzing droplet single cell RNA sequencing data (e.g. 10X Genomics Chromium System) built directly into STAR code. STARsolo inputs the raw FASTQ reads files, and performs the following operations
+
+error correction and demultiplexing of cell barcodes using user-input whitelist
+mapping the reads to the reference genome using the standard STAR spliced read alignment algorithm
+error correction and collapsing (deduplication) of Unique Molecular Identifiers (UMIa)
+quantification of per-cell gene expression by counting the number of reads per gene
+quantification of other transcriptomic features: splice junctions; pre-mRNA; spliced/unspliced reads similar to Velocyto
+STARsolo output is designed to be a drop-in replacement for 10X CellRanger gene quantification output. It follows CellRanger logic for cell barcode whitelisting and UMI deduplication, and produces nearly identical gene counts in the same format. At the same time STARsolo is ~10 times faster than the CellRanger.
+
+### Indexing for STAR (takes a long time)
+
+```bash
+cd /share/workshop/adv_scrna/$USER/scrnaseq_processing/reference
+module load star/2.7.3a
+mkdir GRCm38.star
+STAR --runThreadN 4 --runMode genomeGenerate --genomeDir GRCm38.star --genomeFastaFiles Mus_musculus.GRCm38.dna.primary_assembly.fa --sjdbGTFfile Mus_musculus.GRCm38.100.filtered.gtf --sjdbOverhang 100
+```
+
+### Mapping with Star
+
+Fist Star needs the 10X genomics barcodes whitelist, which can be found [here](https://kb.10xgenomics.com/hc/en-us/articles/115004506263-What-is-a-barcode-whitelist-)
+```bash
+wget -O /share/workshop/adv_scrna/$USER/scrnaseq_processing/resources/737K-august-2016.txt https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2020-Advanced_Single_Cell_RNA_Seq/master/datasets/737K-august-2016.txt
+```
+
+### Exercises
+
+1. Log into tadpole with the username/password given
 
     ```bash
+    # working folder
     cd /share/workshop/adv_scrna/$USER/scrnaseq_processing
-    ln -s /share/biocore/workshops/2020_scRNAseq/2017_10X_mouse_comparative_V2 .
-    ln -s /share/biocore/workshops/2020_scRNAseq/2017_10X_mouse_comparative_V3 .
     ```
 
-	1. In the folder 2017_10X_mouse_comparative_V2, which output folders/files were generated from this script?
-	2. Review the metrics_summary.csv file
-		1. What where the total number of reads in this sample?
-		2. Reads Mapped Confidently to transcriptome?
-		3. Sequencing Saturation?
-		4. Mean Reads per Cell?
-		5. Median UMI Counts per Cell?
-	3. head the files under raw_gene_bc_matrices and filtered_gene_bc_matrices
-	4. If time remain, mock run the script.
-	5. __HOMEWORK__: Using samtools and rseqc evaluate the mapping file.
+2. Load the module for star and review stars help docs
+
+3. Review the [star.counts.sh](https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2020-Advanced_Single_Cell_RNA_Seq/master/software_scripts/scripts/star.counts.sh) script to map the HTStream preprocessed fastq files.
+
+4. Copy contents of the script to your the working folder and run it.
+
+## Mapping  with Salmon Alevin
+
+[Alevin](https://salmon.readthedocs.io/en/latest/alevin.html) is a tool — integrated with the salmon software — that introduces a family of algorithms for quantification and analysis of 3’ tagged-end single-cell sequencing data. Currently alevin supports the following two major droplet based single-cell protocols:
+
+* Drop-seq
+* 10x-Chromium v1/2/3
+
+Alevin works under the same indexing scheme (as salmon) for the reference, and consumes the set of FASTA/Q files(s) containing the Cellular Barcode(CB) + Unique Molecule identifier (UMI) in one read file and the read sequence in the other. Given just the transcriptome and the raw read files, alevin generates a cell-by-gene count matrix (in a fraction of the time compared to other tools).
+
+Alevin works in two phases. In the first phase it quickly parses the read file containing the CB and UMI information to generate the frequency distribution of all the observed CBs, and creates a lightweight data-structure for fast-look up and correction of the CB. In the second round, alevin utilizes the read-sequences contained in the files to map the reads to the transcriptome, identify potential PCR/sequencing errors in the UMIs, and performs hybrid de-duplication while accounting for UMI collisions. Finally, a post-abundance estimation CB whitelisting procedure is done and a cell-by-gene count matrix is generated.
+
+### First lets install and build the newest version of salmon (takes a while)
+
+```bash
+cd /share/workshop/adv_scrna/$USER
+module load cmake
+
+wget https://github.com/COMBINE-lab/salmon/archive/v1.2.1.tar.gz
+tar xzvf v1.2.1.tar.gz
+cd salmon-1.2.1/
+
+mkdir build
+cd  build/
+
+cmake -DFETCH_BOOST=TRUE -DCMAKE_INSTALL_PREFIX=/share/workshop/adv_scrna/$USER/salmon-1.2.1 ..
+make
+make test
+make install
+export PATH=/share/workshop/adv_scrna/$USER/salmon-1.2.1/build/src/:$PATH
+```
+**OR**
+
+link against my Copy
+```bash
+ln -s /share/biocore/workshops/2020_scRNAseq/salmon /share/workshop/adv_scrna/$USER/.
+export PATH=/share/biocore/workshops/2020_scRNAseq/salmon/build/src/:$PATH
+```
+
+### Indexing for Salmon (takes a long time)
+
+```bash
+cd /share/workshop/adv_scrna/$USER/scrnaseq_processing/reference
+
+## Create the genomic decoys
+grep ">" Mus_musculus.GRCm38.dna.primary_assembly.fa | cut -d " " -f 1 > decoys.txt
+sed -i.bak -e 's/>//g' decoys.txt
+
+cat Mus_musculus.GRCm38.cdna.all.fa Mus_musculus.GRCm38.dna.primary_assembly.fa > gentrome.fa
+
+salmon index -p 4 -t gentrome.fa.gz -d decoys.txt -i GRCm38.salmon_decoys
+```
+
+### Mapping with Salmon
+
+Fist Salmon needs a transcript to gene mapping database, we can get this from Biomart.
+*1.) First, go to Biomart
+
+<img class="doc_images" class="doc_images" src="biomart_figures/biomart1.png" alt="biomart1"/>
+
+*2.) for CHOOSE DATASET Select Ensembl Genes 100
+
+<img class="doc_images" src="biomart_figures/biomart2.png" alt="biomart2"/>
+
+*3.) for CHOOSE DATASET Select Mouse Genes (GRCm38.p6)
+
+<img class="doc_images" src="biomart_figures/biomart3.png" alt="biomart3"/>
+
+*4.) Select Attributes
+
+<img class="doc_images" src="biomart_figures/biomart4.png" alt="biomart4"/>
+
+*5.) Enable "Transcript Stable ID Version" and "Gene Stable ID Version", **NOTE** Transcript needs to be before Gene in the list on the left
+
+<img class="doc_images" src="biomart_figures/biomart5.png" alt="biomart5"/>
+
+*6.) Select Unique Results onlY, TSV, and **GO**
+
+<img class="doc_images" src="biomart_figures/biomart6.png" alt="biomart6"/>
+
+Save this file to your computer, remove the first line (the header) and rename it to 'txp2gene.tsv', then move to the server into the folder ""/share/workshop/adv_scrna/$USER/scrnaseq_processing/resources"
+
+**OR** Use mine
+
+```bash
+wget -O /share/workshop/adv_scrna/$USER/scrnaseq_processing/resources/mouse_rrna.fasta https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2020-Advanced_Single_Cell_RNA_Seq/master/datasets/txp2gene.tsv
+```
+
+### Exercises
+
+1. Log into tadpole with the username/password given
 
     ```bash
-    module load rseqc
-    module load samtools
-    bam_stat.py -i possorted_genome_bam.bam > sample_rna_bam.rseqc
-    samtools flagstat possorted_genome_bam.bam > sample_bam.flagstat
-    samtools stats possorted_genome_bam.bam > sample_bam.stats
+    # working folder
+    cd /share/workshop/adv_scrna/$USER/scrnaseq_processing
     ```
 
-  6. Now do the same for the V3 folder and compare the two.
+2. Set the $PATH for the Salmon executable and review salmons help docs
 
----
+3. Review the [salmon.counts.sh](https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2020-Advanced_Single_Cell_RNA_Seq/master/software_scripts/scripts/salmon.counts.sh) script to map the HTStream preprocessed fastq files.
+
+4. Copy contents of the script to your the working folder and run it.
