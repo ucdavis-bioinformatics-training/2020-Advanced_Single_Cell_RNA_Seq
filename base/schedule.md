@@ -16,14 +16,14 @@
 **1:15 pm**  [Expression Project Setup](../data_reduction/project_setup_counting)  
 **1:30 pm**  _Hangs_on_  
 **1:45 pm**  [HTStream Preprocessing](../data_reduction/scrna_htstream)  
-**2:00 pm**  _Hands_on_
-**2:30 pm**  15 minute break
-**2:45 pm**  Creating References  
-**3:00 pm**  _Hands_on_
-**3:15 pm** Read counting with Cellranger/Star solo/Salmon alevin  
-**3:45 pm** _Hands_on_
-**4:45 pm**  Recap and Homework   
-**5:00 pm**  Zoom session ends    
+**2:00 pm**  _Hands_on_  
+**2:30 pm**  15 minute break  
+**2:45 pm**  Creating References    
+**3:00 pm**  _Hands_on_  
+**3:15 pm** Read counting with Cellranger/Star solo/Salmon alevin    
+**3:45 pm** _Hands_on_  
+**4:45 pm**  Recap and Homework     
+**5:00 pm**  Zoom session ends      
 
 ### Day 2
 
