@@ -140,8 +140,8 @@ In the second step, a set of barcodes with low UMI counts that likely represent 
 Below is an example of a challenging cell-calling scenario where 300 high RNA content 293T cells are mixed with 2000 low RNA content PBMC cells. On the left is the cell calling result with the cell calling algorithm prior to cellranger 3.0 and on the right is the current cellranger 3.0 result. You can see that low RNA content cells are successfully identified by the new algorithm.
 
 <p float="center">
-  <img src="figures/knee-plot-old-cell-calling.png" width="40%" />
-  <img src="figures/knee-plot-new-cell-calling.png" width="40%" />
+  <img src="figures/knee-plot-old-cell-calling.png" width="48%" />
+  <img src="figures/knee-plot-new-cell-calling.png" width="48%" />
 </p>
 
 #### Matrix output
