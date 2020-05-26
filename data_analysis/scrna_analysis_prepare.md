@@ -100,7 +100,7 @@ Lets spend a minute looking at the reports and the data
 
 In the R console run the following command.
 ```r
-download.file("https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2020-Advanced_Single_Cell_RNA_Seq/master/datasets/Adv_comparison_outputs.zip", "Adv_comparison_outputs.zip")
+download.file("https://bioshare.bioinformatics.ucdavis.edu/bioshare/download/iimg5mz77whzzqc/expression_tables_cellrangerV3.zip", "Adv_comparison_outputs.zip")
 ```
 Then uncompress the zip File, into the project folder
 
