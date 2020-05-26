@@ -55,6 +55,8 @@ library(devtools)
 
 BiocManager::install(c("Biobase", "SingleCellExperiment", "batchelor", "BiocGenerics", "DelayedArray", "DelayedMatrixStats", "limma", "S4Vectors", "SummarizedExperiment", "pcaMethods"))
 
+## Possible you may have to install Rtools if the below fails
+## http://jtleek.com/modules/01_DataScientistToolbox/02_10_rtools/#1
 devtools::install_github('cole-trapnell-lab/leidenbase')
 devtools::install_github('cole-trapnell-lab/monocle3')
 library(monocle3)
