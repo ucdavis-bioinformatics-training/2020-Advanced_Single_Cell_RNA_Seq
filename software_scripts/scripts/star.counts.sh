@@ -16,7 +16,7 @@ module load star/2.7.3a
 ## c) or if they are already on the path, do nothing
 
 ## Set the parameters for the run
-basepath="/share/workshop/adv_scrna/$USER/scrnaseq_processing"
+basepath=/share/workshop/adv_scrna/$USER/scrnaseq_processing
 transcriptome=${basepath}'/Reference/GRCm38.star'
 fastqs=${basepath}'/01-HTStream'
 output=${basepath}'/654_small_hstream_star'

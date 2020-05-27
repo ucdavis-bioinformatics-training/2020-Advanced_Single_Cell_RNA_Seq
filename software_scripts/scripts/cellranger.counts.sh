@@ -16,7 +16,7 @@ module load cellranger/3.1.0
 ## c) or if they are already on the path, do nothing
 
 ## Set the parameters for the run
-basepath='/share/workshop/adv_scrna/$USER/scrnaseq_processing'
+basepath=/share/workshop/adv_scrna/$USER/scrnaseq_processing
 transcriptome="/share/workshop/adv_scrna/$USER/scrnaseq_processing/Reference/GRCm38.cellranger"
 fastqs="${basepath}/01-HTStream"
 

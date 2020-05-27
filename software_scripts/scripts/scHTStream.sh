@@ -10,7 +10,7 @@ echo "Hostname: $(eval hostname)"
 #export PATH=/share/workshop/adv_scrna/$USER/HTStream/bin:$PATH
 
 ## Set the parameters for the run
-basepath='/share/workshop/adv_scrna/$USER/scrnaseq_processing'
+basepath=/share/workshop/adv_scrna/$USER/scrnaseq_processing
 resources=${basepath}'/resources'
 fastqpath=${basepath}'/00-RawData/654_small'
 outpath=${basepath}'/01-HTStream'
@@ -23,7 +23,7 @@ echo $output
 for sample in `cat samples.txt`
 do
     echo "SAMPLE: ${sample}"
-    mkdir ${outpath}/${sample}
+    mkdir -p ${outpath}/${sample}
 
     call="hts_Stats -L ${outpath}/${sample}/${sample}_scRNA.log -N 'compute stats on original dataset' \
         -1 ${fastqpath}/${sample}_S*_R1_001.fastq.gz \
