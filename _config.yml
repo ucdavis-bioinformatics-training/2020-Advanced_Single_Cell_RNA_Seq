@@ -61,6 +61,8 @@ navigation:
     url: data_analysis/scrna_analysis_prepare
   - title: Mapping Comparison
     url: data_analysis/Mapping_Comparison_fixed
+  - title: Anchoring (Comparison dataset)
+    url: data_analysis/anchoring_fixed
   - title: Shiny App Install/Overview
     url: data_analysis/shiny_app_install
   - title: App Practical Usage
