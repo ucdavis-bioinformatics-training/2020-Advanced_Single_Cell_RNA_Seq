@@ -58,7 +58,7 @@ call="STAR --runThreadN 4 \
     --outSAMtype BAM SortedByCoordinate \
     --soloFeatures Gene Velocyto \
     --readFilesCommand zcat \
-    --readFilesIn ${fastq}/${sample}/${sample}_S1_L001_R1_001.fastq.gz ${fastq}/${sample}/${sample}_S1_L001_R2_001.fastq.gz"
+    --readFilesIn ${fastq}/${sample}/${sample}_S1_L001_R2_001.fastq.gz ${fastq}/${sample}/${sample}_S1_L001_R1_001.fastq.gz"
 
 echo ${call}
 eval ${call}
