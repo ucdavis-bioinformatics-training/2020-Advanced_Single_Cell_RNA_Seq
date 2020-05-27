@@ -106,12 +106,12 @@ In the R console run the following command.
 ```r
 download.file("https://bioshare.bioinformatics.ucdavis.edu/bioshare/download/iimg5mz77whzzqc/Adv_comparison_outputs.zip", "Adv_comparison_outputs.zip")
 zipf <- "Adv_comparison_outputs.zip"
-outdir <- "Adv_comparison_outputs"
+outdir <- "."
 unzip(zipf, exdir=outdir)
 ```
 Then uncompress the zip File, into the project folder
 
-### Download the template Markdown workshop document PART1 and open it.
+### Download the template Markdown workshop document Mapping Comparison and open it.
 
 In the R console run the following command
 ```r
@@ -121,6 +121,13 @@ download.file("https://raw.githubusercontent.com/ucdavis-bioinformatics-training
 ### Download the ensembl ids to gene symbols from biomart. More info on how to create this can be found here: [scMapping](https://ucdavis-bioinformatics-training.github.io/2020-Advanced_Single_Cell_RNA_Seq/data_reduction/scMapping)
 ```r
 download.file("https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2020-Advanced_Single_Cell_RNA_Seq/master/datasets/ens2sym.txt", "ens2sym.txt")
+```
+
+### Download the template Markdown workshop document Anchoring and open it.
+
+In the R console run the following command
+```r
+download.file("https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2020-Advanced_Single_Cell_RNA_Seq/master/data_analysis/anchoring.Rmd", "anchoring.Rmd")
 ```
 
 ### Edit the file YAML portion
