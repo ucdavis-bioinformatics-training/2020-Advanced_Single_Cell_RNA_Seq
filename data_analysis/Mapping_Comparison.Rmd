@@ -20,7 +20,28 @@ library(ggVennDiagram)
 
 ## Load the Expression Matrix Data and create the combined base Seurat object.
 
-Seurat provides a function `Read10X` to read in 10X data folder. First we read in data from each individual sample folder. First, we initialize the Seurat object (`CreateSeuratObject`) with the raw (non-normalized data). Keep all genes expressed in >= 10 cells. Keep all cells with at least 200 detected genes. Also extracting sample names, calculating and adding in the metadata mitochondrial percentage of each cell. Adding in the metadata batchid and cell cycle. Finally, saving the raw Seurat object.
+Seurat provides a function `Read10X` to read in 10X data folder. First we read in data from each individual sample folder. Then, we initialize the Seurat object (`CreateSeuratObject`) with the raw (non-normalized data). Keep all genes expressed in >= 3 cells. Keep all cells with at least 200 detected genes. Also extracting sample names, calculating and adding in the metadata mitochondrial percentage of each cell. Some QA/QC Finally, saving the raw Seurat object.
+
+### A ens2sym.txt file
+
+Reading in the salmon file, we will need to convert the ensembl ids to gene symbols. just like we did [here]  (https://ucdavis-bioinformatics-training.github.io/2020-Advanced_Single_Cell_RNA_Seq/data_reduction/scMapping) to create the txp2gene.txt file from biomart, we will want to do the same for the ens2sym.txt file. You will need 3 columns "Gene stable ID", "Gene stable ID version", and "Gene name". Your final file should look like this
+
+```
+Gene stable ID	Gene stable ID version	Gene name
+ENSMUSG00000064372	ENSMUSG00000064372.1	mt-Tp
+ENSMUSG00000064371	ENSMUSG00000064371.1	mt-Tt
+ENSMUSG00000064370	ENSMUSG00000064370.1	mt-Cytb
+ENSMUSG00000064369	ENSMUSG00000064369.1	mt-Te
+ENSMUSG00000064368	ENSMUSG00000064368.1	mt-Nd6
+ENSMUSG00000064367	ENSMUSG00000064367.1	mt-Nd5
+ENSMUSG00000064366	ENSMUSG00000064366.1	mt-Tl2
+ENSMUSG00000064365	ENSMUSG00000064365.1	mt-Ts2
+ENSMUSG00000064364	ENSMUSG00000064364.1	mt-Th
+ENSMUSG00000064363	ENSMUSG00000064363.1	mt-Nd4
+ENSMUSG00000065947	ENSMUSG00000065947.3	mt-Nd4l
+ENSMUSG00000064361	ENSMUSG00000064361.1	mt-Tr
+ENSMUSG00000064360	ENSMUSG00000064360.1	mt-Nd3
+```
 
 ```{r}
 ## Cellranger
@@ -156,8 +177,10 @@ s_merged <- ScaleData(s_merged, features = all.genes)
 s_merged <- RunPCA(s_merged, features = VariableFeatures(object = s_merged))
 use.pcs = 1:30
 s_merged <- FindNeighbors(s_merged, dims = use.pcs)
-s_merged <- FindClusters(s_merged, resolution = 0.5)
+s_merged <- FindClusters(s_merged, resolution = c(0.5,0.75,1.0))
+s_merged <- RunTSNE(s_merged, dims = use.pcs)
 s_merged <- RunUMAP(s_merged, dims = use.pcs)
+DimPlot(s_merged, reduction = "tsne")
 DimPlot(s_merged, reduction = "umap")
 DimPlot(s_merged, group.by = "orig.ident", reduction = "umap")
 ```
