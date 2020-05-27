@@ -8,7 +8,7 @@ output:
 
 In this section, we will learn how to take two separate datasets and "integrate" them, so that cells of the same type (across datasets) roughly fall into the same region of the tsne or umap plot (instead of separating by dataset first).
 
-Integration is typically done in a few different scenarios, e.g., 
+Integration is typically done in a few different scenarios, e.g.,
 
 * if you collect data from across multiple conditions/days/batches/experiments/etc. and you want to remove these technical confounders.
 * if you are doing a case/control study and you want to identify which cells match across condition.
@@ -38,8 +38,8 @@ s_cellranger_orig
 ```
 
 ```
-## An object of class Seurat 
-## 15203 features across 4907 samples within 1 assay 
+## An object of class Seurat
+## 15203 features across 4907 samples within 1 assay
 ## Active assay: RNA (15203 features, 0 variable features)
 ```
 
@@ -50,8 +50,8 @@ s_cellranger_hts
 ```
 
 ```
-## An object of class Seurat 
-## 15197 features across 4918 samples within 1 assay 
+## An object of class Seurat
+## 15197 features across 4918 samples within 1 assay
 ## Active assay: RNA (15197 features, 0 variable features)
 ```
 
@@ -63,8 +63,8 @@ s_star_hts
 ```
 
 ```
-## An object of class Seurat 
-## 15118 features across 4099 samples within 1 assay 
+## An object of class Seurat
+## 15118 features across 4099 samples within 1 assay
 ## Active assay: RNA (15118 features, 0 variable features)
 ```
 
@@ -111,13 +111,13 @@ s_salmon_hts
 ```
 
 ```
-## An object of class Seurat 
-## 15634 features across 3918 samples within 1 assay 
+## An object of class Seurat
+## 15634 features across 3918 samples within 1 assay
 ## Active assay: RNA (15634 features, 0 variable features)
 ```
 
 ```r
-# Need to Check Col names before merge 
+# Need to Check Col names before merge
 
 # they however have different looking cell ids, need to fix
 head(colnames(s_cellranger_orig))
@@ -477,8 +477,8 @@ s.integrated_standard
 ```
 
 ```
-## An object of class Seurat 
-## 19597 features across 17842 samples within 2 assays 
+## An object of class Seurat
+## 19597 features across 17842 samples within 2 assays
 ## Active assay: integrated (2000 features, 2000 variable features)
 ##  1 other assay present: RNA
 ```
@@ -489,8 +489,8 @@ s.integrated_standard
 ```
 
 ```
-## An object of class Seurat 
-## 19597 features across 17842 samples within 2 assays 
+## An object of class Seurat
+## 19597 features across 17842 samples within 2 assays
 ## Active assay: RNA (17597 features, 0 variable features)
 ##  1 other assay present: integrated
 ```
@@ -501,8 +501,8 @@ s.integrated_standard
 ```
 
 ```
-## An object of class Seurat 
-## 19597 features across 17842 samples within 2 assays 
+## An object of class Seurat
+## 19597 features across 17842 samples within 2 assays
 ## Active assay: integrated (2000 features, 2000 variable features)
 ##  1 other assay present: RNA
 ```
@@ -613,10 +613,10 @@ s.integrated_standard <- FindClusters(s.integrated_standard, resolution = 0.5)
 
 ```
 ## Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
-## 
+##
 ## Number of nodes: 17842
 ## Number of edges: 761977
-## 
+##
 ## Running Louvain algorithm...
 ## Maximum modularity in 10 random starts: 0.9468
 ## Number of communities: 25
@@ -812,17 +812,17 @@ for (i in 1:length(s_sct)) {
 ```r
 s_features_sct <- SelectIntegrationFeatures(object.list = s_sct, nfeatures = 2000)
 
-s_sct <- PrepSCTIntegration(object.list = s_sct, anchor.features = s_features, 
+s_sct <- PrepSCTIntegration(object.list = s_sct, anchor.features = s_features_sct,
     verbose = FALSE)
 ```
 
-### Identify anchors and integrate the datasets. 
+### Identify anchors and integrate the datasets.
 
 Commands are identical to the standard workflow, but make sure to set normalization.method = 'SCT':
 
 
 ```r
-s_anchors_sct <- FindIntegrationAnchors(object.list = s_sct, normalization.method = "SCT",  anchor.features = s_features, verbose = FALSE)
+s_anchors_sct <- FindIntegrationAnchors(object.list = s_sct, normalization.method = "SCT",  anchor.features = s_features_sct, verbose = FALSE)
 s_integrated_sct <- IntegrateData(anchorset = s_anchors_sct, normalization.method = "SCT", verbose = FALSE)
 ```
 
@@ -861,21 +861,21 @@ sessionInfo()
 ## R version 4.0.0 (2020-04-24)
 ## Platform: x86_64-apple-darwin17.0 (64-bit)
 ## Running under: macOS Catalina 10.15.4
-## 
+##
 ## Matrix products: default
 ## BLAS:   /Library/Frameworks/R.framework/Versions/4.0/Resources/lib/libRblas.dylib
 ## LAPACK: /Library/Frameworks/R.framework/Versions/4.0/Resources/lib/libRlapack.dylib
-## 
+##
 ## locale:
 ## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
-## 
+##
 ## attached base packages:
 ## [1] stats     graphics  grDevices datasets  utils     methods   base     
-## 
+##
 ## other attached packages:
 ## [1] cowplot_1.0.0     ggVennDiagram_0.3 ggplot2_3.3.0     tximport_1.16.0  
 ## [5] Seurat_3.1.5     
-## 
+##
 ## loaded via a namespace (and not attached):
 ##   [1] nlme_3.1-148         tsne_0.1-3           sf_0.9-3            
 ##   [4] bit64_0.9-7          RcppAnnoy_0.0.16     RColorBrewer_1.1-2  
@@ -912,5 +912,3 @@ sessionInfo()
 ##  [97] cluster_2.1.0        globals_0.12.5       fitdistrplus_1.1-1  
 ## [100] ellipsis_0.3.1       ROCR_1.0-11
 ```
-
-

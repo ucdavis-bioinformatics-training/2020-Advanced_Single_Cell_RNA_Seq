@@ -8,7 +8,7 @@ output:
 
 In this section, we will learn how to take two separate datasets and "integrate" them, so that cells of the same type (across datasets) roughly fall into the same region of the tsne or umap plot (instead of separating by dataset first).
 
-Integration is typically done in a few different scenarios, e.g., 
+Integration is typically done in a few different scenarios, e.g.,
 
 * if you collect data from across multiple conditions/days/batches/experiments/etc. and you want to remove these technical confounders.
 * if you are doing a case/control study and you want to identify which cells match across condition.
@@ -59,7 +59,7 @@ dim(txi_counts)
 s_salmon_hts <- CreateSeuratObject(counts = txi_counts , min.cells = 3, min.features = 200, project = "salmon")
 s_salmon_hts
 
-# Need to Check Col names before merge 
+# Need to Check Col names before merge
 
 # they however have different looking cell ids, need to fix
 head(colnames(s_cellranger_orig))
@@ -222,11 +222,11 @@ for (i in 1:length(s_sct)) {
 ```{r eval=FALSE}
 s_features_sct <- SelectIntegrationFeatures(object.list = s_sct, nfeatures = 2000)
 
-s_sct <- PrepSCTIntegration(object.list = s_sct, anchor.features = s_features, 
+s_sct <- PrepSCTIntegration(object.list = s_sct, anchor.features = s_features_sct, 
     verbose = FALSE)
 ```
 
-### Identify anchors and integrate the datasets. 
+### Identify anchors and integrate the datasets.
 
 Commands are identical to the standard workflow, but make sure to set normalization.method = 'SCT':
 
@@ -262,5 +262,3 @@ save(s.integrated_standard,file="anchored_object.RData")
 ```{r}
 sessionInfo()
 ```
-
-
