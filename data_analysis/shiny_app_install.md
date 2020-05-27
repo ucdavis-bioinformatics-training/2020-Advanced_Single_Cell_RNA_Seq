@@ -1,6 +1,7 @@
 # Installing and running the app:
 
-1. Enter the following into your Rconsole in Rstudio.
+1. Enter the following into your Rconsole in Rstudio after finishing the Mapping_Comparison.Rmd (it is also located at
+the bottom of the file itself).
     
     ```
    if (!any(rownames(installed.packages()) == "shiny")){
@@ -32,16 +33,22 @@
 
     ```
 
-2. You will now see a new directory appear in the workshop directory called `scRNA_shiny`:
+2. Enter the following into your Rconsole in Rstudio after finishing the anchoring.Rmd (it is also located at
+the bottom of the file itself).
+    ```
+    saveRDS(s_merged, file = "anchoring.rds") 
+    ```
+
+3. You will now see a new directory appear in the workshop directory called `scRNA_shiny`:
     ![](shiny_images/new_directory.png)
 
-3. Navigate until you see the file `app.R`. This is the file containing the app we will use for exploring the data. Open this file:
+4. Navigate until you see the file `app.R`. This is the file containing the app we will use for exploring the data. Open this file:
     ![](shiny_images/app.png)
     
-4. Now Click run app at the top of RStudio:
+5. Now Click run app at the top of RStudio:
     ![](shiny_images/start_app.png)
     
-5. The app should now pop up in a new window:
+6. The app should now pop up in a new window:
     ![](shiny_images/app_view.png)
     
  
