@@ -823,7 +823,7 @@ Commands are identical to the standard workflow, but make sure to set normalizat
 
 ```r
 s_anchors_sct <- FindIntegrationAnchors(object.list = s_sct, normalization.method = "SCT",  anchor.features = s_features_sct, verbose = FALSE)
-s_integrated_sct <- IntegrateData(anchorset = s_anchors_sct, normalization.method = "SCT", verbose = FALSE)
+s.integrated_sct <- IntegrateData(anchorset = s_anchors_sct, normalization.method = "SCT", verbose = FALSE)
 ```
 
 ### Now visualize after anchoring and integration
@@ -831,7 +831,7 @@ s_integrated_sct <- IntegrateData(anchorset = s_anchors_sct, normalization.metho
 However, do not sun ScaleData, SCTransform does this step
 
 ```r
-s.integrated_sct <- RunPCA(s.integrated_sct, npcs = 30, verbose = FALSE)
+ated_sct <- RunPCA(s.integrated_sct, npcs = 30, verbose = FALSE)
 s.integrated_sct <- RunUMAP(s.integrated_sct, reduction = "pca", dims = 1:30)
 DimPlot(s.integrated_sct, reduction = "umap")
 ```
