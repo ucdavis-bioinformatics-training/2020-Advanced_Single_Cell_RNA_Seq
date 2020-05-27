@@ -36,7 +36,7 @@ the bottom of the file itself).
 2. Enter the following into your Rconsole in Rstudio after finishing the anchoring.Rmd (it is also located at
 the bottom of the file itself).
     ```
-    saveRDS(s_merged, file = "anchoring.rds") 
+    saveRDS(s.integrated_standard, file = "anchoring.rds") 
     ```
 
 3. You will now see a new directory appear in the workshop directory called `scRNA_shiny`:

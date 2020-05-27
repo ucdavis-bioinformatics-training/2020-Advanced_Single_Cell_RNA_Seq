@@ -260,7 +260,7 @@ save(s.integrated_standard,file="anchored_object.RData")
 
 ## Also we will save a RDS file for usage in the shiny app as well:
 ```{r eval=FALSE}
-saveRDS(s_merged, file = "anchoring.rds")
+saveRDS(s.integrated_standard, file = "anchoring.rds")
 ```
 
 ## Session Information
