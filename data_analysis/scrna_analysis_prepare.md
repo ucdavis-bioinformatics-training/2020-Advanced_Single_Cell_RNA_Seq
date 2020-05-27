@@ -57,6 +57,8 @@ BiocManager::install(c("Biobase", "SingleCellExperiment", "batchelor", "BiocGene
 
 ## Possible you may have to install Rtools if the below fails
 ## http://jtleek.com/modules/01_DataScientistToolbox/02_10_rtools/#1
+## Mac users may also experience installation problems due to Xcode or gfortran.
+## Instructions: https://cole-trapnell-lab.github.io/monocle3/docs/installation/
 devtools::install_github('cole-trapnell-lab/leidenbase')
 devtools::install_github('cole-trapnell-lab/monocle3')
 library(monocle3)

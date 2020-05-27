@@ -389,7 +389,7 @@ Save this file to your computer, remove the first line (the header) and rename i
 **OR** Use mine
 
 ```bash
-wget -O /share/workshop/adv_scrna/$USER/scrnaseq_processing/resources/mouse_rrna.fasta https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2020-Advanced_Single_Cell_RNA_Seq/master/datasets/txp2gene.tsv
+wget -O /share/workshop/adv_scrna/$USER/scrnaseq_processing/resources/txp2gene.tsv https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2020-Advanced_Single_Cell_RNA_Seq/master/datasets/txp2gene.tsv
 ```
 
 ### Exercises

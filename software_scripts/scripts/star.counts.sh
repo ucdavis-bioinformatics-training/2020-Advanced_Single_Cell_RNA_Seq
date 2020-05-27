@@ -16,9 +16,9 @@ module load star/2.7.3a
 ## c) or if they are already on the path, do nothing
 
 ## Set the parameters for the run
-basepath='/share/workshop/adv_scrna/$USER/scrnaseq_processing'
+basepath=/share/workshop/adv_scrna/$USER/scrnaseq_processing
 transcriptome=${basepath}'/Reference/GRCm38.star'
-fastqs=${basepath}'/01-HTStream'
+fastq=${basepath}'/01-HTStream'
 output=${basepath}'/654_small_hstream_star'
 resources=${basepath}'/resources'
 
@@ -27,6 +27,8 @@ echo $transcriptome
 echo $fastq
 echo $output
 echo $resources
+
+mkdir $output
 
 sample='654_small_htstream'
 
@@ -56,7 +58,7 @@ call="STAR --runThreadN 4 \
     --outSAMtype BAM SortedByCoordinate \
     --soloFeatures Gene Velocyto \
     --readFilesCommand zcat \
-    --readFilesIn ${fastq}/${sample}/${sample}_S1_L008_R2_001.fastq.gz ${fastq}/${sample}/${sample}/654_preproc_S1_L008_R1_001.fastq.gz"
+    --readFilesIn ${fastq}/${sample}/${sample}_S1_L001_R2_001.fastq.gz ${fastq}/${sample}/${sample}_S1_L001_R1_001.fastq.gz"
 
 echo ${call}
 eval ${call}

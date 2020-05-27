@@ -21,6 +21,8 @@ echo $fastq
 echo $output
 echo $resources
 
+mkdir $output
+
 sample='654_small_htstream'
 call="salmon alevin \
     -l ISR \
