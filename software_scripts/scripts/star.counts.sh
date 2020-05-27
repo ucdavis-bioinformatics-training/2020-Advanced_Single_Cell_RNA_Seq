@@ -19,7 +19,7 @@ module load star/2.7.3a
 basepath=/share/workshop/adv_scrna/$USER/scrnaseq_processing
 transcriptome=${basepath}'/Reference/GRCm38.star'
 fastq=${basepath}'/01-HTStream'
-output=${basepath}'/654_small_hstream_star'
+output=${basepath}'/654_small_htstream_star'
 resources=${basepath}'/resources'
 
 echo $basepath
