@@ -106,7 +106,7 @@ In the R console run the following command.
 ```r
 download.file("https://bioshare.bioinformatics.ucdavis.edu/bioshare/download/iimg5mz77whzzqc/Adv_comparison_outputs.zip", "Adv_comparison_outputs.zip")
 zipf <- "Adv_comparison_outputs.zip"
-outdir <- "Adv_comparison_outputs"
+outdir <- "."
 unzip(zipf, exdir=outdir)
 ```
 Then uncompress the zip File, into the project folder
