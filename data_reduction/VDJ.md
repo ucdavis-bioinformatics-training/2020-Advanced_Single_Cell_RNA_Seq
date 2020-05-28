@@ -7,7 +7,7 @@ cd /share/workshop/adv_scrna/$USER
 srun -t 1-00:00:00 -c 4 -n 1 --mem 16000 --partition production --account adv_scrna_workshop --reservation adv_scrna_workshop  --pty /bin/bash
 ```
 
-# Immune profiling V(D)J T Cell adn B Cell analysis with 10X
+# Immune profiling V(D)J T Cell and B Cell analysis with 10X
 
 Human samples and mouse strains of types C57BL/6 and BALB/c have been tested within the 10X genomics system. If you use another mouse strain or different organism, then you need to create your own primers and reference sequence.
 
