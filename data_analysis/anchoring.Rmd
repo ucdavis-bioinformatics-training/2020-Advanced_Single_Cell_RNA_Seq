@@ -258,6 +258,11 @@ regularized negative binomial regression](https://www.biorxiv.org/content/10.110
 save(s.integrated_standard,file="anchored_object.RData")
 ```
 
+## Also we will save a RDS file for usage in the shiny app as well:
+```{r eval=FALSE}
+saveRDS(s.integrated_standard, file = "anchoring.rds")
+```
+
 ## Session Information
 ```{r}
 sessionInfo()
