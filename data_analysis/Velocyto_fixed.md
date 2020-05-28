@@ -20,7 +20,7 @@ library(velocyto.R)
 library(SeuratWrappers)
 ```
 
-## First Downlaod Example Data
+## First Download Example Data
 
 ```r
 download.file("https://bioshare.bioinformatics.ucdavis.edu/bioshare/download/iimg5mz77whzzqc/654.loom", "654.loom")

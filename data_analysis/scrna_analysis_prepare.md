@@ -134,7 +134,7 @@ download.file("https://raw.githubusercontent.com/ucdavis-bioinformatics-training
 
 In the R console run the following command
 ```r
-download.file("https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2020-Advanced_Single_Cell_RNA_Seq/master/data_analysis/VDJ_Analysis.Rmd", "VDJ_Analysis".Rmd")
+download.file("https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2020-Advanced_Single_Cell_RNA_Seq/master/data_analysis/VDJ_Analysis.Rmd", "VDJ_Analysis.Rmd")
 ```
 
 ### Download the template Markdown workshop document for Velocity analysis and open it.

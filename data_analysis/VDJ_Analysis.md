@@ -17,7 +17,7 @@ library(Seurat)
 library(cowplot)
 ```
 
-## First Downlaod Example Data
+## First Download Example Data
 
 ```r
 download.file("https://bioshare.bioinformatics.ucdavis.edu/bioshare/download/iimg5mz77whzzqc/vdj_v1_mm_balbc_pbmc.zip", "vdj_v1_mm_balbc_pbmc.zip")
