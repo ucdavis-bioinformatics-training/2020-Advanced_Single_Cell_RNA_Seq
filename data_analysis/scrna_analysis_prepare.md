@@ -130,6 +130,20 @@ In the R console run the following command
 download.file("https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2020-Advanced_Single_Cell_RNA_Seq/master/data_analysis/anchoring.Rmd", "anchoring.Rmd")
 ```
 
+### Download the template Markdown workshop document for VDJ and open it.
+
+In the R console run the following command
+```r
+download.file("https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2020-Advanced_Single_Cell_RNA_Seq/master/data_analysis/VDJ_Analysis.Rmd", "VDJ_Analysis".Rmd")
+```
+
+### Download the template Markdown workshop document for Velocity analysis and open it.
+
+In the R console run the following command
+```r
+download.file("https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2020-Advanced_Single_Cell_RNA_Seq/master/data_analysis/Velocyto.Rmd", "Velocyto.Rmd")
+```
+
 ### Edit the file YAML portion
 
 The top YAML (YAML ain't markup language) portion of the doc tells RStudio how to parse the document.
