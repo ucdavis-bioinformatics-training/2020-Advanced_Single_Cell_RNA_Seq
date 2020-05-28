@@ -9,7 +9,7 @@ srun -t 1-00:00:00 -c 4 -n 1 --mem 16000 --partition production --account adv_sc
 
 # Immune profiling V(D)J T Cell adn B Cell analysis with 10X
 
-Human samples and mouse strains of types C57BL/6 and BALB/c have been tested within the 10X genomics system. If you use another nouse strain or different organism, then you need to create your own primers and reference sequence.
+Human samples and mouse strains of types C57BL/6 and BALB/c have been tested within the 10X genomics system. If you use another mouse strain or different organism, then you need to create your own primers and reference sequence.
 
 <div class="figure" style="text-align: center">
 <img src="vdj_figures/read-layout.png" alt="V(D)J" width="80%" />
