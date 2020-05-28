@@ -19,22 +19,25 @@ RNA velocity is a high-dimensional vector that predicts the future state of a ce
 
 ### Example dataset
 
-We'll use the example dataset from Mapping Comparison section, sample 654 from the paper
+We'll use the example dataset from Mapping Comparison section from the paper, sample 654_small
 
 [_"Single-Cell RNA-seq Reveals Profound Alterations in Mechanosensitive Dorsal Root Ganglion Neurons With Vitamin E Deficiency"_](https://pubmed.ncbi.nlm.nih.gov/31733517/)
 
 
-```bash
-cd /share/workshop/adv_scrna/$USER/scrnaseq_processing
-mkdir cd /share/workshop/adv_scrna/$USER/scrnaseq_processing/velocity
-cd /share/workshop/adv_scrna/$USER/scrnaseq_processing/velocity
-ln -s /share/biocore/workshops/2020_scRNAseq/velocity/654 .
+and the cellranger count results folder from the [Mapping](scMapping) section.
+
+```
+/share/workshop/adv_scrna/msettles/scrnaseq_processing/654_small
 ```
 
-we also need the gtf file used in creating the reference
-
 ```bash
-ln -s /share/biocore/workshops/2020_scRNAseq/Reference/Mus_musculus.GRCm38.100.filtered.gtf .
+cd /share/workshop/adv_scrna/$USER/scrnaseq_processing
+```
+
+we also need the gtf file used in creating the reference, which should be here:
+
+```
+/share/workshop/adv_scrna/msettles/scrnaseq_processing/Reference/Mus_musculus.GRCm38.100.filtered.gtf .
 ```
 
 ### Next lets install the software [velocyto](https://velocyto.org/)
@@ -42,15 +45,16 @@ ln -s /share/biocore/workshops/2020_scRNAseq/Reference/Mus_musculus.GRCm38.100.f
 To install velocyto (a python application) we are going to use conda and a virtual environment
 
 ```bash
+cd /share/workshop/adv_scrna/$USER
 module load anaconda3
 conda create -p velocyto
-conda activate /share/workshop/adv_scrna/$USER/scrnaseq_processing/velocity/velocyto
+conda activate /share/workshop/adv_scrna/$USER/velocyto
 ```
 
 If the environment 'activated' properly, than your prompt should look something like this.
 
 ```
-(/share/workshop/adv_scrna/msettles/scrnaseq_processing/velocity/velocyto) msettles@tadpole:/share/workshop/adv_scrna/msettles/scrnaseq_processing/velocity$
+(/share/workshop/adv_scrna/msettles/velocyto) msettles@tadpole:/share/workshop/adv_scrna/msettles$
 ```
 
 If not you can try to initialize your bash
@@ -58,7 +62,7 @@ If not you can try to initialize your bash
 kinit
 conda init bash
 source /home/$USER/.bashrc
-conda activate /share/workshop/adv_scrna/$USER/scrnaseq_processing/velocity/velocyto
+conda activate /share/workshop/adv_scrna/$USER/velocyto
 ```
 
 Once your conda environment is properly activated you can then install the softare.
@@ -77,11 +81,7 @@ velocyto --help
 It is also recommended to use a repetative sequence mask file, this is easiest to obtain from the [UCSC genome browser](https://genome.ucsc.edu/cgi-bin/hgTables?hgsid=611454127_NtvlaW6xBSIRYJEBI0iRDEWisITa&clade=mammal&org=Mouse&db=mm10&hgta_group=allTracks&hgta_track=rmsk&hgta_table=0&hgta_regionType=genome&position=chr12%3A56694976-56714605&hgta_outputType=primaryTable&hgta_outputType=gff&hgta_outFileName=mm10_rmsk.gtf
 ).
 
-You want to download the mask in gtf format. For the sake of speed lets just link my copy. Unfortunately Ensembl doesn't provide a gtf file for th repeat sequences and we'd have to generate one ourselves which is beyond the scope of this workshop.
-
-```bash
-ln -s /share/biocore/workshops/2020_scRNAseq/velocity/mm10_rmsk.gtf .
-```
+You want to download the mask in gtf format. Unfortunately, Ensembl doesn't provide a gtf file for th repeat sequences and we'd have to generate one ourselves (write a script to do so) which is beyond the scope of this workshop.
 
 ###  Running Velocyto on Cellranger output
 
@@ -91,26 +91,50 @@ Lets first take a look at the help doc for run10x
 velocyto run10x --help
 ```
 
-Your dirctory should look something like This
-
-```
-drwxrwsr-x  3 msettles adv_scrna_workshop  6 May 28 07:18 .
-drwxrwsr-x 13 msettles adv_scrna_workshop 21 May 28 06:39 ..
-lrwxrwxrwx  1 msettles adv_scrna_workshop 51 May 28 07:07 654 -> /share/biocore/workshops/2020_scRNAseq/velocity/654
-lrwxrwxrwx  1 msettles adv_scrna_workshop 76 May 28 07:10 Mus_musculus.GRCm38.100.gtf -> /share/biocore/workshops/2020_scRNAseq/Reference/Mus_musculus.GRCm38.100.filtered.gtf
-drwxrwsr-x 22 msettles adv_scrna_workshop 22 May 28 06:58 velocyto
-```
-
 Ok, now we are ready to run this on our sample
 
 ```bash
-cd /share/workshop/adv_scrna/$USER/scrnaseq_processing/velocity
-velocyto run10x  654 Mus_musculus.GRCm38.100.filtered.gtf
+cd /share/workshop/adv_scrna/$USER/scrnaseq_processing
+velocyto run10x  654_small References/Mus_musculus.GRCm38.100.filtered.gtf
 ```
 
 ### Output
 
 Velocyto run10x simply produces a folder called velocyto in the sample directory with a single [loom](https://linnarssonlab.org/loompy/format/index.html) file in it, which contains the needed matrices for the analysis.
+
+The output folder 654_small, now has a new folder called velocyto
+```
+drwxrwsr-x 5 msettles biocore   20 May 28 07:22 .
+drwxrwsr-x 3 msettles biocore    4 May 28 07:17 ..
+-rw-rw-r-- 1 msettles biocore 4.2M May 28 06:29 654.mri.tgz
+-rw-rw-r-- 1 msettles biocore  287 May 28 06:29 _cmdline
+-rw-rw-r-- 1 msettles biocore  66K May 28 06:29 _filelist
+-rw-r--r-- 1 msettles biocore 969K May 28 06:29 _finalstate
+-rw-r--r-- 1 msettles biocore  719 May 28 06:29 _invocation
+-rw-r--r-- 1 msettles biocore    5 May 28 06:29 _jobmode
+-rw-r--r-- 1 msettles biocore  69K May 28 06:27 _log
+-rw-r--r-- 1 msettles biocore  66K May 28 06:29 _mrosource
+drwxrwsr-x 5 msettles biocore   14 May 28 06:28 outs
+-rw-r--r-- 1 msettles biocore 577K May 28 06:29 _perf
+drwxrwsr-x 6 msettles biocore    6 May 28 06:26 SC_RNA_COUNTER_CS
+-rw-rw-r-- 1 msettles biocore  17K May 28 06:29 _sitecheck
+-rw-r--r-- 1 msettles biocore    2 May 28 06:29 _tags
+-rw-r--r-- 1 msettles biocore   51 May 28 06:27 _timestamp
+-rw-r--r-- 1 msettles biocore   36 May 28 06:29 _uuid
+-rw-r--r-- 1 msettles biocore 132K May 28 06:27 _vdrkill
+drwxrwsr-x 2 msettles biocore    3 May 28 08:50 velocyto    <-----
+-rw-r--r-- 1 msettles biocore   61 May 28 06:27 _versions
+```
+
+and inside that folder is the loom file.
+
+```
+drwxrwsr-x 2 msettles biocore   3 May 28 08:50 .
+drwxrwsr-x 5 msettles biocore  20 May 28 07:22 ..
+-rw-rw-r-- 1 msettles biocore 56M May 28 08:52 654.loom
+```
+
+I expect that the 654_small dataset will fail as their aren't enough reads, but on a full dataset it produces the loom file.
 
 ### More reading
 

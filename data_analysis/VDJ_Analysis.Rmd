@@ -1,0 +1,200 @@
+---
+title: "Single Cell VDJ Analysis"
+author: "Bioinformatics Core"
+output:
+    html_document:
+      keep_md: TRUE
+---
+
+# Single Cell V(D)J Analysis with Seurat and some custom code!
+
+[Seurat](http://satijalab.org/seurat/) is a popular R package that is designed for QC, analysis, and exploration of single cell data. Seurat aims to enable users to identify and interpret sources of heterogeneity from single cell transcriptomic measurements, and to integrate diverse types of single cell data. Further, the authors provide several [tutorials](https://satijalab.org/seurat/vignettes.html) on their website.
+
+We start with loading needed libraries for R
+```{r, warning=FALSE,error=FALSE,message=FALSE}
+library(Seurat)
+library(cowplot)
+```
+
+## First Downlaod Example Data
+```{r eval=FALSE}
+download.file("https://bioshare.bioinformatics.ucdavis.edu/bioshare/download/iimg5mz77whzzqc/vdj_v1_mm_balbc_pbmc.zip", "vdj_v1_mm_balbc_pbmc.zip")
+```
+## Load the Expression Matrix Data and create the combined base Seurat object.
+
+Seurat provides a function `Read10X` to read in 10X data folder. First we read in data from each individual sample folder. Then, we initialize the Seurat object (`CreateSeuratObject`) with the raw (non-normalized data). Keep all genes expressed in >= 3 cells. Keep all cells with at least 200 detected genes. Also extracting sample names, calculating and adding in the metadata mitochondrial percentage of each cell. Some QA/QC Finally, saving the raw Seurat object.
+
+```{r}
+## Cellranger
+balbc_pbmc <- Read10X_h5("vdj_v1_mm_balbc_pbmc/vdj_v1_mm_balbc_pbmc_5gex_filtered_feature_bc_matrix.h5")
+
+s_balbc_pbmc <- CreateSeuratObject(counts = balbc_pbmc, min.cells = 3, min.features = 200, project = "cellranger")
+```
+
+### The percentage of reads that map to the mitochondrial genome
+
+* Low-quality / dying cells often exhibit extensive mitochondrial content
+* We calculate mitochondrial QC metrics with the PercentageFeatureSet function, which calculates the percentage of counts originating from a set of features.
+* We use the set of all genes, in mouse these genes can be identified as those that begin with 'mt', in human data they begin with MT.
+
+```{r}
+s_balbc_pbmc$percent.mito <- PercentageFeatureSet(s_balbc_pbmc, pattern = "^mt-")
+```
+
+## Next lets add the T cell and B cell clonetype information
+```{r}
+add_clonotype <- function(tcr_prefix, seurat_obj, type="t"){
+    tcr <- read.csv(paste(tcr_prefix,"filtered_contig_annotations.csv", sep=""))
+
+    # Remove the -1 at the end of each barcode.
+    # Subsets so only the first line of each barcode is kept,
+    # as each entry for given barcode will have same clonotype.
+    tcr <- tcr[!duplicated(tcr$barcode), ]
+
+    # Only keep the barcode and clonotype columns. 
+    # We'll get additional clonotype info from the clonotype table.
+    tcr <- tcr[,c("barcode", "raw_clonotype_id")]
+    names(tcr)[names(tcr) == "raw_clonotype_id"] <- "clonotype_id"
+
+    # Clonotype-centric info.
+    clono <- read.csv(paste(tcr_prefix,"clonotypes.csv", sep=""))
+
+    # Slap the AA sequences onto our original table by clonotype_id.
+    tcr <- merge(tcr, clono[, c("clonotype_id", "cdr3s_aa")])
+    names(tcr)[names(tcr) == "cdr3s_aa"] <- "cdr3s_aa"
+
+    # Reorder so barcodes are first column and set them as rownames.
+    tcr <- tcr[, c(2,1,3)]
+    rownames(tcr) <- tcr[,1]
+    tcr[,1] <- NULL
+    colnames(tcr) <- paste(type, colnames(tcr), sep="_")
+    # Add to the Seurat object's metadata.
+    clono_seurat <- AddMetaData(object=seurat_obj, metadata=tcr)
+    return(clono_seurat)
+}
+
+s_balbc_pbmc <- add_clonotype("vdj_v1_mm_balbc_pbmc/vdj_v1_mm_balbc_pbmc_t_", s_balbc_pbmc, "t")
+s_balbc_pbmc <- add_clonotype("vdj_v1_mm_balbc_pbmc/vdj_v1_mm_balbc_pbmc_b_", s_balbc_pbmc, "b")
+head(s_balbc_pbmc[[]])
+```
+
+### Are there any T/B cells out there??
+```{r}
+table(!is.na(s_balbc_pbmc$t_clonotype_id),!is.na(s_balbc_pbmc$b_clonotype_id))
+s_balbc_pbmc <- subset(s_balbc_pbmc, cells = colnames(s_balbc_pbmc)[!(!is.na(s_balbc_pbmc$t_clonotype_id) &
+                                 !is.na(s_balbc_pbmc$b_clonotype_id))])
+s_balbc_pbmc
+```
+
+### Lets take a look at some other metadata
+
+```{r}
+RidgePlot(s_balbc_pbmc, features="nCount_RNA")
+RidgePlot(s_balbc_pbmc, features="nFeature_RNA")
+RidgePlot(s_balbc_pbmc, features="percent.mito")
+```
+
+
+```{r fig.height=8}
+VlnPlot(
+  s_balbc_pbmc,
+  features = c("nFeature_RNA", "nCount_RNA","percent.mito"),
+  ncol = 1, pt.size = 0.3)
+```
+
+
+```{r}
+FeatureScatter(s_balbc_pbmc, feature1 = "nCount_RNA", feature2 = "percent.mito")
+FeatureScatter(s_balbc_pbmc, "nCount_RNA", "nFeature_RNA",pt.size = 0.5)
+```
+
+
+```{r}
+s_balbc_pbmc <- subset(s_balbc_pbmc, percent.mito <= 10)
+
+s_balbc_pbmc <- subset(s_balbc_pbmc, nCount_RNA >= 500 & nCount_RNA <= 40000)
+
+s_balbc_pbmc
+```
+
+
+```{r}
+s_balbc_pbmc <- NormalizeData(s_balbc_pbmc, normalization.method = "LogNormalize", scale.factor = 10000)
+s_balbc_pbmc <- FindVariableFeatures(s_balbc_pbmc, selection.method = "vst", nfeatures = 2000)
+
+all.genes <- rownames(s_balbc_pbmc)
+s_balbc_pbmc <- ScaleData(s_balbc_pbmc, features = all.genes)
+s_balbc_pbmc <- RunPCA(s_balbc_pbmc, features = VariableFeatures(object = s_balbc_pbmc))
+use.pcs = 1:30
+s_balbc_pbmc <- FindNeighbors(s_balbc_pbmc, dims = use.pcs)
+s_balbc_pbmc <- FindClusters(s_balbc_pbmc, resolution = c(0.5))
+s_balbc_pbmc <- RunUMAP(s_balbc_pbmc, dims = use.pcs)
+DimPlot(s_balbc_pbmc, reduction = "umap", label = TRUE)
+```
+
+Lets look at T-cell and B-cell markers
+```{r}
+t_cell_markers <- c("Cd3d","Cd3e")
+FeaturePlot(s_balbc_pbmc, features = t_cell_markers)
+table(!is.na(s_balbc_pbmc$t_clonotype_id),s_balbc_pbmc$seurat_clusters)
+t_cells <- c("1","5","6")
+```
+Lets look at T-cell and B-cell markers
+```{r}
+t_cell_markers <- c("Cd3d","Cd3e")
+FeaturePlot(s_balbc_pbmc, features = t_cell_markers)
+table(!is.na(s_balbc_pbmc$t_clonotype_id),s_balbc_pbmc$seurat_clusters)
+t_cells <- c("1","5","6")
+```
+
+
+```{r}
+b_cell_markers <- c("Cd79a","Cd79b")
+FeaturePlot(s_balbc_pbmc, features = b_cell_markers)
+table(!is.na(s_balbc_pbmc$b_clonotype_id),s_balbc_pbmc$seurat_clusters)
+b_cells <- c("0","2","3","4","12","13")
+
+```
+
+```{r}
+markers_all = FindAllMarkers(s_balbc_pbmc,genes.use = VariableFeatures(s_balbc_pbmc),
+    only.pos = TRUE, 
+    min.pct = 0.25, 
+    thresh.use = 0.25)
+
+dim(markers_all)
+head(markers_all)
+table(table(markers_all$gene))
+
+markers_all_single <- markers_all[markers_all$gene %in% names(table(markers_all$gene))[table(markers_all$gene) == 1],]
+
+dim(markers_all_single)
+table(table(markers_all_single$gene))
+
+table(markers_all_single$cluster)
+
+head(markers_all_single)
+```
+
+Plot a heatmap of genes by cluster for the top 5 marker genes per cluster
+```{r}
+library(dplyr)
+top5 <- markers_all_single %>% group_by(cluster) %>% top_n(5, avg_logFC)
+dim(top5)
+DoHeatmap(
+    object = s_balbc_pbmc, 
+    features = top5$gene
+) 
+```
+
+## Finally, save the object
+```{r}
+## Original dataset in Seurat class, with no filtering
+save(s_balbc_pbmc,file="VDJ_object.RData")
+```
+
+## Session Information
+```{r}
+sessionInfo()
+```
+

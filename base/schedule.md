@@ -58,16 +58,16 @@
 **10:45 am**   15 minute break  
 **11:00 am**    Cell Preparation Talk by Diana Burkard-Waco  
 **12:00 pm** Lunch hour    
-**1:00 pm**  VDJ data reduction  
+**1:00 pm**  [VDJ data reduction](data_reduction/VDJ)  
 **1:30 pm**  _Hands on_  
-**2:00 pm**  VDJ anaysis  
+**2:00 pm**  [VDJ anaysis](data_analysis/VDJ_Analysis_fixed)   
 **2:15 pm**  _Hands on_  
-**2:30 pm**  VDJ anaysis  
+**2:30 pm**  [VDJ anaysis](data_analysis/VDJ_Analysis_fixed)   
 **2:45 pm**  _Hands on_  
 **3:00 pm**  15 minute break    
-**3:15 pm**   Volocity data reduction    
+**3:15 pm**   [Volocity data reduction](data_reduction/Velocyto)
 **3:30 pm**  _Hands on_  
-**3:45 pm**  Velocity data analysis   
+**3:45 pm**  [Velocity data analysis](data_analysis/Velocito_fixed)   
 **4:00 pm**  _Hands on_   
 **4:45 pm** Closing  
 **5:00  pm**  Zoom session ends  

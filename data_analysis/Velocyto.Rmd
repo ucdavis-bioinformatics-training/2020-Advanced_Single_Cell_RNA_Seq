@@ -1,0 +1,75 @@
+---
+title: "Velocyto"
+author: "Bioinformatics Core"
+output:
+    html_document:
+      keep_md: TRUE
+---
+
+# Velocyto Analysis merging out Seurat analysis with the Velocyto results
+
+We start with loading needed libraries for R
+```{r, warning=FALSE,error=FALSE,message=FALSE}
+library(Seurat)
+library(velocyto.R)
+## install SeuratWrappers
+#install.packages("devtools")
+#library(devtools)
+#devtools::install_github('satijalab/seurat-wrappers')
+library(SeuratWrappers)
+```
+
+## First Downlaod Example Data
+```{r eval=FALSE}
+download.file("https://bioshare.bioinformatics.ucdavis.edu/bioshare/download/iimg5mz77whzzqc/654.loom", "654.loom")
+```
+
+
+#RUN Velocity
+```{r}
+loom.data <- ReadVelocity(file = "654.loom")
+s_cellranger_orig <- as.Seurat(x = loom.data)
+
+DefaultAssay(object = s_cellranger_orig) <- "spliced"
+```
+
+```{r}
+s_cellranger_orig <- NormalizeData(s_cellranger_orig, verbose = FALSE)
+s_cellranger_orig <- FindVariableFeatures(s_cellranger_orig,selection.method = "vst", nfeatures = 2000, verbose = FALSE)
+s_cellranger_orig <- ScaleData(s_cellranger_orig, verbose = FALSE)
+s_cellranger_orig <- RunPCA(object = s_cellranger_orig, verbose = FALSE)
+s_cellranger_orig <- FindNeighbors(object = s_cellranger_orig, dims = 1:30)
+s_cellranger_orig <- FindClusters(object = s_cellranger_orig)
+s_cellranger_orig <- RunUMAP(object = s_cellranger_orig, dims = 1:30)
+```
+
+
+```{r}
+s_cellranger_orig <- RunVelocity(object = s_cellranger_orig, deltaT = 1, kCells = 25, fit.quantile = 0.02)
+
+ident.colors <- (scales::hue_pal())(n = length(x = levels(x = s_cellranger_orig)))
+
+names(x = ident.colors) <- levels(x = s_cellranger_orig)
+
+cell.colors <- ident.colors[Idents(object = s_cellranger_orig)]
+
+names(x = cell.colors) <- colnames(x = s_cellranger_orig)
+
+show.velocity.on.embedding.cor(emb = Embeddings(object = s_cellranger_orig, reduction = "umap"), vel = Tool(object = s_cellranger_orig, 
+    slot = "RunVelocity"), n = 200, scale = "sqrt", cell.colors = ac(x = cell.colors, alpha = 0.5), 
+    cex = 0.8, arrow.scale = 3, show.grid.flow = TRUE, min.grid.cell.mass = 0.5, grid.n = 40, arrow.lwd = 1, 
+    do.par = FALSE, cell.border.alpha = 0.1)
+```
+
+## Finally, save the object
+
+```{r}
+## Original dataset in Seurat class, with no filtering
+save(s_cellranger_orig,file="Velocyto_object.RData")
+```
+
+## Session Information
+```{r}
+sessionInfo()
+```
+

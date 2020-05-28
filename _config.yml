@@ -55,6 +55,10 @@ navigation:
     url: data_reduction/scrna_htstream
   - title: Generating Expression Tables
     url: data_reduction/scMapping
+  - title: VDJ T cell and B cell
+    url: data_reduction/VDJ
+  - title: Velocity analysis
+    url:   Velocyto
 
   - heading: Data analysis
   - title: scRNA analysis prepare
@@ -71,6 +75,10 @@ navigation:
     url: data_analysis/shiny_on_aws
   - title: Monocle
     url: data_analysis/adv_scrnaseq_monocle_fixed
+  - title: VDJ T cell and B cell analysis
+    url: data_analysis/VDJ_Analysis_fixed
+  - title: Velocity  analysis
+    url:  data_analysis/Velocito_fixed
 
   - heading: ETC
   - title: Closing thoughts
