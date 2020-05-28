@@ -52,10 +52,22 @@
 ### Day 3
 
 **8:50 am**  Zoom session starts  
-**9:00 am** Recap and check everyones R session  
-**10:30 am**   15 minute break  
+**9:00 am** Recap and questions  
+**9:30 am**  [Monocle](data_analysis/adv_scrnaseq_monocle_fixed) (by Hannah)   
+**10:00 am**  _Hands on_
+**10:45 am**   15 minute break  
 **11:00 am**    Cell Preparation Talk by Diana Burkard-Waco  
 **12:00 pm** Lunch hour    
+**1:00 pm**  VDJ data reduction  
+**1:30 pm**  _Hands on_  
+**2:00 pm**  VDJ anaysis  
+**2:15 pm**  _Hands on_  
+**2:30 pm**  VDJ anaysis  
+**2:45 pm**  _Hands on_  
 **3:00 pm**  15 minute break    
+**3:15 pm**   Volocity data reduction    
+**3:30 pm**  _Hands on_  
+**3:45 pm**  Velocity data analysis   
+**4:00 pm**  _Hands on_   
 **4:45 pm** Closing  
 **5:00  pm**  Zoom session ends  

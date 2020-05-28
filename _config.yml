@@ -70,7 +70,7 @@ navigation:
   - title: AWS Hosted App (Optional)
     url: data_analysis/shiny_on_aws
   - title: Monocle
-    url: data_analysis/adv_scrnaseq_monocle
+    url: data_analysis/adv_scrnaseq_monocle_fixed
 
   - heading: ETC
   - title: Closing thoughts
