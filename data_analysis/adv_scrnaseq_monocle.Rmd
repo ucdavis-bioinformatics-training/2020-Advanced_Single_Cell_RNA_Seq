@@ -11,9 +11,9 @@ output:
 
 [Monocle](http://cole-trapnell-lab.github.io/monocle-release/), from the Trapnell Lab, is a piece of the TopHat suite that performs differential expression, trajectory, and pseudotime analyses on single cell RNA-Seq data. A very comprehensive [tutorial](http://cole-trapnell-lab.github.io/monocle-release/docs/#recommended-analysis-protocol) can be found on the Trapnell lab website. We will be using Monocle3, which is still in the beta phase of its development.
 
-```{r, include=FALSE}
-library(monocle3)
-library(dplyr)
+```{r results='hide'}
+library(monocle3, warn.conflicts = FALSE, quietly = TRUE)
+library(dplyr, warn.conflicts = FALSE, quietly = TRUE)
 
 download.file("https://github.com/ucdavis-bioinformatics-training/2020-Advanced_Single_Cell_RNA_Seq/raw/master/datasets/monocle3_expression_matrix.rds", "monocle3_expression_matrix.rds")
 download.file("https://github.com/ucdavis-bioinformatics-training/2020-Advanced_Single_Cell_RNA_Seq/raw/master/datasets/monocle3_cell_metadata.rds", "monocle3_cell_metadata.rds")
@@ -56,8 +56,11 @@ The pre-processed data can then be used to perform UMAP and tSNE.
 ```{r}
 cds <- reduce_dimension(cds, preprocess_method = "PCA",
                         reduction_method = "UMAP")
-plot_cells(cds, reduction_method = "UMAP", color_cells_by = "orig.ident")
-plot_cells(cds, reduction_method = "UMAP", color_cells_by = "res.0.3")
+plot_cells(cds, reduction_method = "UMAP",
+           color_cells_by = "orig.ident",
+           show_trajectory_graph = FALSE)
+plot_cells(cds, reduction_method = "UMAP", color_cells_by = "res.0.3",
+           show_trajectory_graph = FALSE)
 ```
 
 ## TSNE
@@ -65,8 +68,12 @@ plot_cells(cds, reduction_method = "UMAP", color_cells_by = "res.0.3")
 ```{r}
 cds <- reduce_dimension(cds, preprocess_method = "PCA",
                         reduction_method="tSNE")
-plot_cells(cds, reduction_method="tSNE", color_cells_by = "res.0.3")
-plot_cells(cds, reduction_method="tSNE", color_cells_by = "orig.ident")
+plot_cells(cds, reduction_method="tSNE",
+           color_cells_by = "res.0.3",
+           show_trajectory_graph = FALSE)
+plot_cells(cds, reduction_method="tSNE",
+           color_cells_by = "orig.ident",
+           show_trajectory_graph = FALSE)
 ```
 
 ```{r}
@@ -79,15 +86,17 @@ Monocle groups cells into clusters using community detection methods in the func
 
 ```{r}
 cds <- cluster_cells(cds, resolution=1e-5)
-plot_cells(cds)
-plot_cells(cds, color_cells_by = "partition", group_cells_by = "partition")
+plot_cells(cds, show_trajectory_graph = FALSE)
+plot_cells(cds, color_cells_by = "partition",
+           group_cells_by = "partition",
+           show_trajectory_graph = FALSE)
 ```
 
 ## Identify and plot marker genes for each cluster
 
 Top markers identifies genes that are most specifically expressed in each group of cells. In this case, we are grouping cells by their monocle3 cluster. When `marker_sig_test = "TRUE"`, monocle3 will perform a significance test on the discriminative power of each marker. This may be slow, so we have dedicated several cores to help speed up the process. You may set this number depending on the specifications of your computer. The reference set for the significance test is randomly selected.
 
-```{r, include=FALSE}
+```{r, results="hide", error=FALSE, warning=FALSE, message=FALSE}
 marker_test_res <- top_markers(cds,
                                group_cells_by="cluster",
                                reduction_method = "UMAP",
@@ -173,7 +182,7 @@ plot_cells(root5,
 
 Monocle's `graph_test()` function detects genes that vary over a trajectory. This may run very slowly. For me, it took roughly 12 minutes. Adjust the number of cores as needed.
 
-```{r, include=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE}
 cds_graph_test_results <- graph_test(cds,
                                      neighbor_graph = "principal_graph",
                                      cores = 4)
@@ -181,7 +190,7 @@ cds_graph_test_results <- graph_test(cds,
 
 The output of this function is a table. We can look at the expression of someof these genes overlaid on the trajectory plot.
 
-```{r}
+```{r, results='hide', warning=FALSE, message=FALSE}
 head(cds_graph_test_results)
 pr_deg_ids <- row.names(subset(cds_graph_test_results, q_value < 0.05))
 plot_cells(cds, genes = head(pr_deg_ids),
