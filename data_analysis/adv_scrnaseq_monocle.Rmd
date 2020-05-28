@@ -22,7 +22,7 @@ download.file("https://github.com/ucdavis-bioinformatics-training/2020-Advanced_
 
 # Setting up monocle3 cell_data_set object
 
-The Bioinformatics Core generally uses Seurat for single cell analysis. In future versions of monocle, direct import from Seurat objects will be supported. We imported as three tables: an expression matrix, a phenotype data table, and a feature data table.
+The Bioinformatics Core generally uses Seurat for single cell analysis. In future versions of monocle, direct import from Seurat objects will be supported. We imported data from a Seurat object as three separate objects: an expression matrix, a phenotype data table, and a feature data table.
 
 In order to create the monocle3 `cell_data_set` object, the expression matrix column names must be identical to the row names of the phenotype data table (cell names), and the expression matrix row names must be identical to the feature data table (gene identifiers).
 

@@ -7,6 +7,12 @@ output:
 
 ---
 
+To download the Monocle R Markdown document, run:
+
+```r
+download.file("https://github.com/ucdavis-bioinformatics-training/2020-Advanced_Single_Cell_RNA_Seq/raw/master/data_analysis/adv_scrnaseq_monocle.Rmd", "adv_scrnaseq_monocle.Rmd")
+```
+
 # About Monocle
 
 [Monocle](http://cole-trapnell-lab.github.io/monocle-release/), from the Trapnell Lab, is a piece of the TopHat suite that performs differential expression, trajectory, and pseudotime analyses on single cell RNA-Seq data. A very comprehensive [tutorial](http://cole-trapnell-lab.github.io/monocle-release/docs/#recommended-analysis-protocol) can be found on the Trapnell lab website. We will be using Monocle3, which is still in the beta phase of its development.
