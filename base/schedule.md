@@ -67,7 +67,7 @@
 **3:00 pm**  15 minute break    
 **3:15 pm**   [Volocity data reduction](data_reduction/Velocyto)
 **3:30 pm**  _Hands on_  
-**3:45 pm**  [Velocity data analysis](data_analysis/Velocito_fixed)   
+**3:45 pm**  [Velocity data analysis](data_analysis/Velocyto_fixed)   
 **4:00 pm**  _Hands on_   
 **4:45 pm** Closing  
 **5:00  pm**  Zoom session ends  

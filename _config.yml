@@ -58,7 +58,7 @@ navigation:
   - title: VDJ T cell and B cell
     url: data_reduction/VDJ
   - title: Velocity analysis
-    url:   Velocyto
+    url:   data_reduction/Velocyto
 
   - heading: Data analysis
   - title: scRNA analysis prepare
@@ -78,7 +78,7 @@ navigation:
   - title: VDJ T cell and B cell analysis
     url: data_analysis/VDJ_Analysis_fixed
   - title: Velocity  analysis
-    url:  data_analysis/Velocito_fixed
+    url:  data_analysis/Velocyto_fixed
 
   - heading: ETC
   - title: Closing thoughts
