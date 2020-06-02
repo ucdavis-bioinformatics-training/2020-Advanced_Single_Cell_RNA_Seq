@@ -1,10 +1,10 @@
 ### Create a new RStudio project
 
-Open RStudio and create a new project, for more info see (Using-Projects)[https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects]
+Open RStudio and create a new project, for more info see [Using-Projects](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects)
 
 * File > New Project > New Directory > New Project (name the new directory, Ex. Adv_Mapping_Comparison) and check "use packrat with this project", or "use renv with this project" if your using the devel version.
 
-Learn more about (renv)[https://rstudio.github.io/renv/articles/renv.html]
+Learn more about [renv](https://rstudio.github.io/renv/articles/renv.html)
 
 Set some options and make sure the packages Seurat, sva, ggplot2, dplyr, limma, topGO, WGCNA are installed (if not install it), and then load them and verify they all loaded correctly.
 
